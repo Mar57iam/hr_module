@@ -1,0 +1,17 @@
+{
+    "department_management": "إدارة الأقسام",
+    "add_department": "إضافة قسم",
+    "search_departments": "ابحث في الأقسام...",
+    "name": "الاسم",
+    "head_department": "رئيس القسم",
+    "description": "الوصف",
+    "actions": "الإجراءات",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا القسم؟",
+    "success_delete": "تم حذف القسم بنجاح!",
+    "error_delete": "فشل في حذف القسم!",
+    "success_update": "تم تعديل القسم بنجاح!",
+    "error_update": "فشل في تعديل القسم!"
+  }
+  

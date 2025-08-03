@@ -1,0 +1,31 @@
+{
+  "dashboard": "لوحة التحكم",
+  "recruitment": "التوظيف",
+  "employees": "الموظفون",
+  "employee_list": "قائمة الموظفين",
+  "register_employee": "تسجيل موظف جديد",
+  "employee_profiles": "الملفات الشخصية",
+  "bulk_operations": "العمليات الجماعية",
+  "organization": "الهيكل التنظيمي",
+  "departments": "الأقسام",
+  "positions": "الوظائف",
+  "attendance": "الحضور",
+  "clock_in_out": "تسجيل الدخول والخروج",
+  "manual_entry": "إدخال يدوي",
+  "reports": "التقارير",
+  "payroll": "الرواتب",
+  "analytics": "التحليلات",
+  "settings": "الإعدادات",
+  "leave_management": "إدارة الإجازات",
+  "request_leave": "تقديم طلب إجازة",
+  "pending_requests": "الطلبات المعلقة",
+  "leave_calendar": "تقويم الإجازات",
+  "leave_balances": "أرصدة الإجازات",
+  "users_management": "إدارة المستخدمين",
+  "users_list": "قائمة المستخدمين",
+  "add_user": "إضافة مستخدم",
+  "logout": "تسجيل الخروج"
+}
+
+
+  
