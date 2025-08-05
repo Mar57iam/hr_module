@@ -30,7 +30,7 @@ export default function useEmployees() {
 
   const updateEmployee = async ({ id, updatedData }) => {
     const res = await fetch(`https://site46339-a7pcm8.scloudsite101.com/api/v1/employees/${id}`, {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -97,7 +97,6 @@ export default function useEmployees() {
     },
   });
   
-
   
 
 

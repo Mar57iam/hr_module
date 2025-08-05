@@ -60,10 +60,7 @@ export default function AttendencePage() {
             <FaClock />
             Clock In
           </button>
-          <button className="flex items-center gap-2 bg-gray-100 text-gray-500 px-5 py-2 rounded-lg font-semibold cursor-not-allowed" disabled>
-            <FaClock />
-            Clock Out
-          </button>
+         
         </div>
       </div>
 

@@ -351,7 +351,7 @@ export default function RegisterEmployee() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full cursor-pointer mb-3 mt-5 flex items-center justify-center gap-2 ${
+            className={`w-[50%] mx-auto cursor-pointer mb-3 mt-5 flex items-center justify-center gap-2 ${
               loading
                 ? 'opacity-50 cursor-not-allowed bg-[#B79031]'
                 : 'text-white bg-[#B79031] hover:bg-white hover:text-black hover:border border-gray-600'

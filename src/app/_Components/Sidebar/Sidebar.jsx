@@ -142,6 +142,13 @@ export default function Sidebar() {
         href: '/leaveBalances',
         icon: <MdAttachMoney />,
       },
+      {
+        type: 'link',
+        key: 'my_profile',
+        href: '/myProfile',
+        icon: <MdPerson />,
+      },
+      
     ],
   },
 ];
@@ -175,9 +182,14 @@ export default function Sidebar() {
       >
         <div className="h-full flex flex-col justify-between">
           {/* Logo */}
-          <div className="flex mt-10 flex-col items-center">
-            <Image src="/images/logo2.svg" alt="Logo" width={140} height={140} className="mb-4" />
-          </div>
+          {/* <div className="flex mt-10 flex-col items-center">
+            <Image
+             src="/images/logo2.svg"
+              alt="Logo" width={140} height={140} 
+              className="mb-4" 
+              priority={true}
+              />
+          </div> */}
 
           {/* Links */}
           <div className="flex-1 flex flex-col justify-start overflow-y-auto">

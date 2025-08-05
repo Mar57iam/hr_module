@@ -14,12 +14,13 @@ import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../Confirm';
 import { useTranslation } from 'react-i18next';
+import EmEdModal from './EmEdModal';
 
 export default function AllEmployees() {
   const { t, i18n } = useTranslation('employees');
   const isRTL = i18n.language === 'ar';
 
-  const { getAllEm, deleteMutation } = useEmployees();
+  const { getAllEm, deleteMutation , updateMutation } = useEmployees();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['employees'],
     queryFn: getAllEm,
@@ -29,6 +30,11 @@ export default function AllEmployees() {
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+ 
+
+
   const dropdownRefs = useRef({});
 
   const toggleDropdown = (id) => {
@@ -53,6 +59,11 @@ export default function AllEmployees() {
   const handleDeleteClick = (id) => {
     setSelectedId(id);
     setShowConfirm(true);
+  };
+
+  const handleEditClick = (emp) => {
+    setSelectedEmployee(emp);
+    setIsEditModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -80,7 +91,7 @@ export default function AllEmployees() {
       }`}
     >
       <div className={`${isRTL ? 'md:mr-3' : 'md:ml-3'} md:mt-3 mb-3`}>
-        <h2 className="text-2xl mt-14 md:mt-10 font-bold text-gray-700">
+        <h2 className=" mm text-2xl mt-14 md:mt-10 font-bold text-gray-700">
           {t('employee_directory')}
         </h2>
       </div>
@@ -159,12 +170,19 @@ export default function AllEmployees() {
                       >
                         <FiUser className="mr-2" /> {t('view_profile')}
                       </button>
-                      {/* <button
+                      <button
+                       onClick={() => handleEditClick(emp)}
+                        className="flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          >
+                         <FiEdit2 className="mr-2" /> {t('edit')}
+                          </button>
+
+                      <button
                         onClick={() => handleDeleteClick(emp.id)}
                         className="flex w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                       >
                         <FiTrash2 className="mr-2" /> {t('delete')}
-                      </button> */}
+                      </button>
                     </div>
                   )}
                 </td>
@@ -173,6 +191,34 @@ export default function AllEmployees() {
           </tbody>
         </table>
       </div>
+
+
+
+
+      {isEditModalOpen && selectedEmployee && (
+  <EmEdModal
+    employee={selectedEmployee}
+    onClose={() => setIsEditModalOpen(false)}
+    onSubmit={(updatedData) => {
+      updateMutation.mutate(
+        {
+          id: selectedEmployee.id,
+          updatedData,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Employee updated Succesfully!');
+            setIsEditModalOpen(false);
+          },
+          onError: () => {
+            toast.error('Failed to update employee');
+          },
+        }
+      );
+    }}
+  />
+)}
+
 
       <ConfirmModal
         show={showConfirm}
