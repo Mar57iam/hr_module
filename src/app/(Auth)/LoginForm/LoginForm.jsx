@@ -14,13 +14,13 @@ export default function LoginForm() {
   const { loginUserFunc } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState('');
-  
+
 
   const schema = z.object({
     email: z.string().email("Email must be valid"),
     password: z.string()
       .min(6, "Password must be at least 6 characters")
-      .regex(/^[A-Za-z0-9]+$/, "Password must contain only letters and numbers")
+      .regex(/^[A-Za-z0-9]+$/, "Password must contains only letters and numbers")
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -66,8 +66,8 @@ export default function LoginForm() {
               {t('email')}
             </label>
             <input type="email" id="email" {...register("email")}
-  placeholder={t('email_placeholder')} autoComplete="off" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white focus:outline-none"
-/>
+              placeholder={t('email_placeholder')} autoComplete="off" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white focus:outline-none"
+            />
             {errors.email && (
               <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
             )}
@@ -78,9 +78,9 @@ export default function LoginForm() {
               {t('password')}
             </label>
             <input
-  type="password" id="password" {...register("password")} placeholder={t('password_placeholder')}
-  autoComplete="off"className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg mb-2 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white focus:outline-none"
-/>
+              type="password" id="password" {...register("password")} placeholder={t('password_placeholder')}
+              autoComplete="off" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg mb-2 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white focus:outline-none"
+            />
             {errors.password && (
               <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
             )}

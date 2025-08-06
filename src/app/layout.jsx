@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactQueryProvider from "./_Components/ReactQ/ReactQuery";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "./_Components/Sidebar/Sidebar";
+import ProtectRoute from "./_Components/ProutectedRoute/Protected";
 import Navbar from "./_Components/Navbar/Navbar";
 
 
@@ -26,27 +27,29 @@ export const metadata = {
 
 let query = new QueryClient()
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, Component }) {
+  const isProtected = children.isProtected
   return (
-    <html  lang="en">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-       
-       <AuthContextProvider>
-  <TranslationProvider>
-    {/* <Navbar/> */}
-    <Sidebar />
-    <ReactQueryProvider>
-    <Toaster position="top-center" reverseOrder={false} />
 
-      {children}
-    </ReactQueryProvider>
-  </TranslationProvider>
-</AuthContextProvider>
+        <AuthContextProvider>
+          <TranslationProvider>
+            {/* <Navbar/> */}
+            <Sidebar />
+            <ReactQueryProvider>
+              <Toaster position="top-center" reverseOrder={false} />
+              <ProtectRoute>
+                {children}
+              </ProtectRoute>
+            </ReactQueryProvider>
+          </TranslationProvider>
+        </AuthContextProvider>
 
-      
-       
+
+
       </body>
     </html>
   );
