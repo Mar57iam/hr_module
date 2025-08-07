@@ -1,14 +1,17 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
 
-const TranslationContext = createContext();
+import { createContext, useEffect, useState } from 'react';
+
+export const TranslationContext = createContext();
 const NAMESPACES = ['auth', 'employees', 'departments', 'sidebar'];
 
-export default function TranslationProvider({ children }) {
-  const [lang, setLang] = useState('en');
+export default function TranslationContextProvider({ children }) {
+  const [lang, setLang] = useState(localStorage.getItem("lang"));
   const [langDict, setLangDict] = useState({});
-
+  
   async function changeLang(newLang, page = null) {
+    console.log(lang)
+    console.log(newLang)
     setLang(newLang);
     localStorage.setItem('lang', newLang);
 
