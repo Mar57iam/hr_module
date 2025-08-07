@@ -10,13 +10,7 @@ import AdmainDashboard from './AdmainDashboard';
 import EmDashboard from './EmDashboard';
 
 export default function Dashboard() {
-  const router = useRouter();
-  const { getMeFunc } = useContext(AuthContext);
-  const [role, setRole] = useState(null);
-  useEffect(() => {
-    setRole(localStorage.getItem("user").role)
-  }, [])
-
+  const { role } = useContext(AuthContext);
 
   if (role === 'admin' || role === 'manager') {
     return <AdmainDashboard />;

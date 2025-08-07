@@ -1,15 +1,14 @@
 "use client"
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import React, { useContext, useEffect, useState } from 'react';
 import TranslationProvider from "./_Components/TranslationProvider/TranslationProvider";
-import AuthContextProvider from "@/Context/AuthContext";
+import AuthContextProvider, { AuthContext } from "@/Context/AuthContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactQueryProvider from "./_Components/ReactQ/ReactQuery";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "./_Components/Sidebar/Sidebar";
 import ProtectRoute from "./_Components/ProutectedRoute/Protected";
 import Navbar from "./_Components/Navbar/Navbar";
-import { useEffect, useState } from "react";
 
 
 // const geistSans = Geist({
@@ -30,15 +29,16 @@ const metadata = {
 let query = new QueryClient()
 
 export default function RootLayout({ children }) {
-  const [ user, setUser ] = useState(false)
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     setUser(localStorage.getItem("user"))
+    return () => setUser(null)
   }, [])
-
   return (
     <html lang="en">
       <body
-        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
 
         <AuthContextProvider>

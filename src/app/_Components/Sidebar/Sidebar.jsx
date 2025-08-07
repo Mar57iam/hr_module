@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useContext, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useContext, useEffect, useMemo, useState } from 'react';
+// import { useTranslation } from 'react-i18next';
 import {
   MdDashboard, MdPersonAdd, MdPeople, MdAccessTime, MdAttachMoney,
   MdBarChart, MdSettings, MdLogout, MdList,
@@ -12,15 +12,18 @@ import {
 } from 'react-icons/md';
 import { AuthContext } from '@/Context/AuthContext';
 import Tbutton from '../Tbutton/Tbutton';
+import useTranslation from '@/Hooks/useTranslation';
 
 export default function Sidebar() {
   const { token, role, logoutUserFunc } = useContext(AuthContext);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
+  const { t, lang, setLang } = useTranslation('sidebar');
   // const { t, i18n } = useTranslation('sidebar');
 
-  const isRTL = i18n.language === 'ar';
+  const [isRTL, setRTL] = useState(lang === 'ar');
+  useEffect(() => { setRTL(lang === 'ar') }, [lang])
 
   const sections = useMemo(() => ([
     {
@@ -73,7 +76,7 @@ export default function Sidebar() {
       ...child,
       label: t(child.key)
     }))
-  }))), [i18n.language]);
+  }))), [lang]);
 
   if (!token) return null;
 

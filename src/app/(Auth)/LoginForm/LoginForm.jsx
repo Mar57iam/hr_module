@@ -44,8 +44,7 @@ export default function LoginForm() {
       setIsLoading(true);
       setApiErrorMessage('');
 
-      const data = await loginUserFunc(values);
-      console.log(data);
+      await loginUserFunc(values);
 
     } catch (error) {
       console.error(error);
