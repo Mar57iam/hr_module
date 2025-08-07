@@ -41,12 +41,8 @@ export default function AuthContextProvider({ children }) {
 
   async function loginUserFunc(values) {
     try {
-      console.log("values")
-      console.log(values)
       const { data } = await axiosInstance.post(`/auth/login`, values);
-      console.log(data)
 
-      localStorage.setItem("user", JSON.stringify(data.user))
 
       if (data.message === 'MFA required') {
         setTempToken(data.temp_token);
@@ -56,6 +52,7 @@ export default function AuthContextProvider({ children }) {
         return;
       }
 
+      localStorage.setItem("user", JSON.stringify(data.user))
       if (data.access_token) {
         Cookies.set('token', data.access_token, {
           expires: 1,
@@ -123,6 +120,8 @@ export default function AuthContextProvider({ children }) {
         sameSite: 'Strict',
       });
 
+      localStorage.setItem("user", JSON.stringify(data.user))
+      setRole(data.role)
       setToken(data.access_token);
       await getMeFunc();
       router.push('/dashboard');
@@ -161,7 +160,7 @@ export default function AuthContextProvider({ children }) {
       const data = JSON.parse(localStorage.getItem("user"))
       setRole(data?.role);
       return data;
-      
+
     } catch (error) {
       try {
         const { data } = await axiosInstance.get('/auth/me');
