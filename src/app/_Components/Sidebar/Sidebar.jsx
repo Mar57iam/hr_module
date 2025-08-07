@@ -19,13 +19,13 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { t, lang, setLang } = useTranslation('sidebar');
+  const { t, lang } = useTranslation('sidebar');
   // const { t, i18n } = useTranslation('sidebar');
 
   const [isRTL, setRTL] = useState(lang === 'ar');
   useEffect(() => { setRTL(lang === 'ar') }, [lang])
 
-  const sections = useMemo(() => ([
+  const sections = [
     {
       type: 'link', key: 'dashboard', href: '/dashboard', icon: <MdDashboard />,
     },
@@ -56,7 +56,7 @@ export default function Sidebar() {
     {
       type: 'section', key: 'attendance', icon: <MdAccessTime />, children: [
         { key: 'Clock', href: '/attendanceClock', icon: <MdAccessTime /> },
-        { key: 'Manual Attendance', href: '/manualAttendance', icon: <MdPerson /> },
+        // { key: 'Manual Attendance', href: '/manualAttendance', icon: <MdPerson /> },
         { key: 'reports', href: '/attendanceReports', icon: <MdBarChart /> },
       ]
     },
@@ -76,7 +76,7 @@ export default function Sidebar() {
       ...child,
       label: t(child.key)
     }))
-  }))), [lang]);
+  }))
 
   if (!token) return null;
 

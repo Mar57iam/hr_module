@@ -1,40 +1,90 @@
-import { useEffect, useState } from 'react';
+'use client';
+
+import TranslationProvider from '@/app/_Components/TranslationProvider/TranslationProvider';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+const NAMESPACES = ['auth', 'employees', 'departments', 'sidebar'];
+
+// export default function useTranslation(page = null) {
+//   const { lang, changeLang, t } = useContext(TranslationProvider);
+
+//   useEffect(() => {
+//     if (page) {
+//       changeLang(lang, page);
+//     }
+//   }, [page]);
+
+//   return {
+//     lang,
+//     setLang: (newLang) => changeLang(newLang, page),
+//     t: (key) => t(page, key),
+//   };
+// }
 
 
-export default function useTranslation(page) {
+
+export default function useTranslation(page = null) {
     const [lang, setLang] = useState('en');
-    const [langDict, setLangDict] = useState(null);
+    // const [langDict, setLangDict] = useState(JSON.parse(localStorage.getItem("langDict")));
+    const [langDict, setLangDict] = useState({});
 
-    useEffect(() => {
-        setLang(localStorage.getItem("lang") || "en")
-    }, [])
-    useEffect(() => {
-        console.log("change language")
-        localStorage.setItem("lang", lang)
-    }, [lang])
-
-    useEffect(() => {
-        // async function loadLang() {
-        //     const LOAD_PATH = '/locales/{{lng}}/{{ns}}.json';
-        //     const load_path = LOAD_PATH.replace("{{lng}}", lang).replace("{{ns}}", page)
-        //     await fetch(load_path)
-        //         .then((res) => res.json())
-        //         .then((res) => setLangDict(res)
-        //         )
-        // }
-        // localStorage.setItem("lang", lang)
-        // loadLang()
-    }, [page, lang])
-
-    useEffect(() => {
-        console.log("langDict")
-        console.log(langDict)
-    }, [langDict])
-
-    function t(word) {
-        // const dict = langDict[lang]
-        if (langDict) return langDict[word]
-        return word
+    // Check if data for this lang+page is already loaded
+    function isCachedData(lang, page) {
+        if (!page) return false
+        return !!langDict?.[lang]?.[page];
     }
-    return { lang, setLang, t };
+
+
+    async function loadNamespace(newLang, page) {
+        try {
+            const path = `/locales/${newLang}/${page}.json`;
+            await fetch(path)
+                .then(res => res.json())
+                .then(
+                    (data) => {
+                        // Merge new data into existing langDict
+                        setLangDict(prev => ({
+                            ...prev,
+                            [newLang]: {
+                                ...prev?.[newLang],
+                                [page]: data
+                            }
+                        }));
+                        setLang(newLang);
+                        localStorage.setItem("lang", newLang);
+                    }
+                );
+        } catch (err) {
+            console.error("Failed to load translation:", err);
+        }
+    }
+    async function changeLang(newLang) {
+        if (isCachedData(newLang, page)) {
+            setLang(newLang);
+            localStorage.setItem("lang", newLang);
+        } else {
+            if (page) {
+                // Load single namespace
+                await loadNamespace(newLang, page);
+            } else {
+                // Load all known namespaces
+                await Promise.all(NAMESPACES.map(ns => loadNamespace(newLang, ns)));
+            }
+        }
+    }
+
+    useEffect(() => {
+        const storedLang = localStorage.getItem("lang") || "en";
+        changeLang(storedLang);
+    }, [page, lang]); // runs when `page` changes
+
+
+    function t(key) {
+        console.log(langDict?.[lang]?.[page]?.[key] || key)
+        
+        // Access via: langDict[lang][page][key]
+        return langDict?.[lang]?.[page]?.[key] || key;
+    }
+
+    return { lang, setLang: changeLang, t };
 }

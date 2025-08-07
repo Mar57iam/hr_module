@@ -16,7 +16,7 @@
   "payroll": "Payroll",
   "analytics": "Analytics",
   "settings": "Settings",
-  "logout": "Logout", 
+  "logout": "Logout",
   "leave_management": "Leave Management",
   "request_leave": "Request Leave",
   "pending_requests": "Pending Requests",
@@ -25,8 +25,8 @@
   "users_management": "Users Management",
   "users_list": "Users List",
   "add_user": "Add User",
-   "my_profile": "My Profile",
-   "documents": "Documents",
+  "my_profile": "My Profile",
+  "documents": "Documents",
   "documents_list": "All Documents",
   "add_document": "Add Document"
 }
