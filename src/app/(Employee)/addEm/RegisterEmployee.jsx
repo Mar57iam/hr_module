@@ -28,7 +28,7 @@ const employeeSchema = z.object({
 });
 
 export default function RegisterEmployee() {
-  const { t, i18n } = useTranslation('employees');
+  // const { t, i18n } = useTranslation('employees');
   const isRTL = i18n.language === 'ar';
 
   const { addMutation } = useEmployees();

@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function EmployeeFilter() {
-  const { t, i18n } = useTranslation('employees'); 
+  // const { t, i18n } = useTranslation('employees'); 
 
   const handleImport = () => {
     alert(t("import_clicked"));

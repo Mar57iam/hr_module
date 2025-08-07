@@ -13,7 +13,7 @@ export default function ResetPassword() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const email = searchParams.get('email');
-  const { t, i18n } = useTranslation('auth');
+  // const { t, i18n } = useTranslation('auth');
   const isRTL = i18n.language === 'ar';
 
   const { resetPasswordFunc } = useContext(AuthContext);

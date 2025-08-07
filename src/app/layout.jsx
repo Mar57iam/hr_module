@@ -30,7 +30,7 @@ const metadata = {
 let query = new QueryClient()
 
 export default function RootLayout({ children }) {
-  const { user, setUser } = useState(false)
+  const [ user, setUser ] = useState(false)
   useEffect(() => {
     setUser(localStorage.getItem("user"))
   }, [])

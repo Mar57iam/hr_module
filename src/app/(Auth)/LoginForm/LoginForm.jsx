@@ -4,11 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthContext } from '@/Context/AuthContext';
 import { CgSpinner } from "react-icons/cg";
+import useTranslation from '@/Hooks/useTranslation';
 
 export default function LoginForm() {
   const { loginUserFunc } = useContext(AuthContext);
@@ -28,20 +29,14 @@ export default function LoginForm() {
     resolver: zodResolver(schema)
   });
 
-  const { t, i18n } = useTranslation('auth');
-  const { isRTL, setRTL } = useState(false);
+  // const { t, i18n } = useTranslation('auth');
+  const { lang, setLang, t } = useTranslation("auth")
+  const [ isRTL, setRTL ] = useState(false);
 
 
   useEffect(() => {
-    // Only change language on the client if needed
-    setIsLoading(true)
-    setRTL(i18n.language === 'en')
-    if (i18n.language !== 'en') {
-      i18n.changeLanguage('en').then(() => setIsLoading(false))
-    } else {
-      setIsLoading(false)
-    }
-  }, [i18n])
+    setRTL(lang === 'ar')
+  }, [lang])
 
 
   const loginFn = async (values) => {
@@ -113,9 +108,9 @@ export default function LoginForm() {
                 >
                   {isLoading ? (
                     <CgSpinner className="animate-spin w-5 h-5" />
-                  ) : (
+                  ) :
                     t('signin_btn')
-                  )}
+                  }
                 </button>
 
                 <div className="text-sm font-medium text-gray-500 dark:text-gray-300">

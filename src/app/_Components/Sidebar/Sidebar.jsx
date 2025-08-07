@@ -26,7 +26,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { t, i18n } = useTranslation('sidebar');
+  // const { t, i18n } = useTranslation('sidebar');
 
   const isRTL = i18n.language === 'ar';
 

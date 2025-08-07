@@ -10,7 +10,7 @@ import Mbutton from '../Mbutton/Mbutton';
 
 export default function Navbar() {
   const { logoutUserFunc } = useContext(AuthContext);
-  const { t, i18n } = useTranslation('sidebar');
+  // const { t, i18n } = useTranslation('sidebar');
 
   return (
     <nav className="w-full flex justify-end items-center p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">

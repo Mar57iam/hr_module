@@ -15,7 +15,7 @@ export default function Protected({ children }) {
   const router = useRouter()
 
   useEffect(() => {
-    const isProtected = protectedPaths.some(p => pathname.startsWith(p))
+    const isProtected = protectedPaths?.some(p => pathname.startsWith(p))
     if (isProtected) {
       if (!token) {
         router.push('/')

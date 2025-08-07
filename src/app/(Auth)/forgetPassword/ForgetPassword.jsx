@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export default function ForgetPassword() {
   const { register, handleSubmit } = useForm();
-  const { t, i18n } = useTranslation('auth');
+  // const { t, i18n } = useTranslation('auth');
   const isRTL = i18n.language === 'ar';
      const router = useRouter()
 

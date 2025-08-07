@@ -13,14 +13,17 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../Confirm';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import EmEdModal from './EmEdModal';
+import useTranslation from '@/Hooks/useTranslation';
 
 export default function AllEmployees() {
-  const { t, i18n } = useTranslation('employees');
-  const isRTL = i18n.language === 'ar';
-
-  const { getAllEm, deleteMutation , updateMutation } = useEmployees();
+  const { t, lang, setLang } = useTranslation('employees');
+  const [isRTL, setRTL] = useState(lang === 'ar');
+  useEffect(() => {
+    setRTL(lang === 'ar')
+  }, [lang])
+  const { getAllEm, deleteMutation, updateMutation } = useEmployees();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['employees'],
     queryFn: getAllEm,
@@ -32,7 +35,7 @@ export default function AllEmployees() {
   const [selectedId, setSelectedId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
- 
+
 
 
   const dropdownRefs = useRef({});
@@ -86,9 +89,8 @@ export default function AllEmployees() {
   return (
     <section
       dir={isRTL ? 'rtl' : 'ltr'}
-      className={`mt-4 ml-0 mx-auto px-4 ${
-        isRTL ? 'md:mr-[300px]' : 'md:ml-[300px]'
-      }`}
+      className={`mt-4 ml-0 mx-auto px-4 ${isRTL ? 'md:mr-[300px]' : 'md:ml-[300px]'
+        }`}
     >
       <div className={`${isRTL ? 'md:mr-3' : 'md:ml-3'} md:mt-3 mb-3`}>
         <h2 className=" mm text-2xl mt-14 md:mt-10 font-bold text-gray-700">
@@ -160,9 +162,8 @@ export default function AllEmployees() {
                   {openDropdownId === emp.id && (
                     <div
                       ref={(el) => (dropdownRefs.current[emp.id] = el)}
-                      className={`absolute ${
-                        isRTL ? 'left-4' : 'right-4'
-                      } -top-[20px] w-40 bg-white border border-gray-200 rounded shadow z-50`}
+                      className={`absolute ${isRTL ? 'left-4' : 'right-4'
+                        } -top-[20px] w-40 bg-white border border-gray-200 rounded shadow z-50`}
                     >
                       <button
                         onClick={() => router.push(`/employees/${emp.id}`)}
@@ -171,11 +172,11 @@ export default function AllEmployees() {
                         <FiUser className="mr-2" /> {t('view_profile')}
                       </button>
                       <button
-                       onClick={() => handleEditClick(emp)}
+                        onClick={() => handleEditClick(emp)}
                         className="flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                          >
-                         <FiEdit2 className="mr-2" /> {t('edit')}
-                          </button>
+                      >
+                        <FiEdit2 className="mr-2" /> {t('edit')}
+                      </button>
 
                       <button
                         onClick={() => handleDeleteClick(emp.id)}
@@ -196,28 +197,28 @@ export default function AllEmployees() {
 
 
       {isEditModalOpen && selectedEmployee && (
-  <EmEdModal
-    employee={selectedEmployee}
-    onClose={() => setIsEditModalOpen(false)}
-    onSubmit={(updatedData) => {
-      updateMutation.mutate(
-        {
-          id: selectedEmployee.id,
-          updatedData,
-        },
-        {
-          onSuccess: () => {
-            toast.success('Employee updated Succesfully!');
-            setIsEditModalOpen(false);
-          },
-          onError: () => {
-            toast.error('Failed to update employee');
-          },
-        }
-      );
-    }}
-  />
-)}
+        <EmEdModal
+          employee={selectedEmployee}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={(updatedData) => {
+            updateMutation.mutate(
+              {
+                id: selectedEmployee.id,
+                updatedData,
+              },
+              {
+                onSuccess: () => {
+                  toast.success('Employee updated Succesfully!');
+                  setIsEditModalOpen(false);
+                },
+                onError: () => {
+                  toast.error('Failed to update employee');
+                },
+              }
+            );
+          }}
+        />
+      )}
 
 
       <ConfirmModal
