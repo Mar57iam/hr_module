@@ -1,105 +1,191 @@
 'use client';
 
-// import useProfile from '@/hooks/useProfile';
-import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
-import { FiEdit } from 'react-icons/fi';
 import useProfile from '@/Hooks/useProfile';
+import { useState } from 'react';
+import { FiEdit2, FiUploadCloud } from 'react-icons/fi';
 
 export default function MyProfile() {
-  const { profile, isLoading, isError, error } = useProfile();
+  const [editPersonal, setEditPersonal] = useState(false);
+  const [editLogin, setEditLogin] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset, 
-  } = useForm();
+  const [email, setEmail] = useState('mariam@example.com');
+  const [password, setPassword] = useState('********');
 
-   useEffect(() => {
-    if (profile) {
-      reset({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        email: profile.user_id?.email || '',
-        phone: profile.phone_number || '',
-        address: profile.address || '',
-      });
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  let {profile: data, isLoading, isError, error,} = useProfile()
+  console.log(data);
+  
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = () => {
+    if (!selectedFile) {
+      alert('Please select a file first');
+      return;
     }
-  }, [profile, reset]);
+    console.log('Uploading file:', selectedFile);
+    
+  };
 
-  if (isLoading) return <p className="text-center text-gray-500">Loading profile...</p>;
-  if (isError) return <p className="text-center text-red-500">Error: {error.message}</p>;
-  if (!profile) return <p>No profile data</p>;
-
-  const employee = {
-    avatar: profile.avatar,
-    first_name: profile.first_name,
-    last_name: profile.last_name,
-    email: profile.user_id?.email,
-    phone: profile.phone_number,
-    address: profile.address,
-    employee_id: profile.employee_id,
-    hire_date: profile.hire_date,
-    status: profile.status,
-    position: profile.position_id?.title,
-    department: profile.department_id?.name,
-    salary: `$${profile.salary}`,
-    role: profile.user_id?.role,
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    console.log('New Email:', email);
+    console.log('New Password:', password);
+    setEditLogin(false);
   };
 
   return (
-    <div className="p-6 space-y-8 ml-[280px]">
-      {/* Profile Header */}
-      <div className="flex items-center gap-6">
-        <div className="w-28 h-28 rounded-full bg-gray-200 overflow-hidden">
-          {employee.avatar ? (
-            <img src={employee.avatar} alt="Avatar" className="w-full h-full object-cover" />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">No Avatar</div>
-          )}
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold">{employee.first_name} {employee.last_name}</h2>
-          <p className="text-sm text-gray-500">{employee.role}</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-100 py-10 px-4 flex justify-center">
+      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img
+              src="https://i.pravatar.cc/150?img=32"
+              alt="Profile"
+              className="w-24 h-24 rounded-full"
+            />
+            <div>
+              <h2 className="text-2xl font-bold">Mariam Mostafa</h2>
+              <p className="text-gray-500">Frontend Developer</p>
+            </div>
+          </div>
 
-      {/* Cards Section */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Contact Info */}
-        <div className="bg-white p-6 rounded-xl shadow space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Contact Information</h3>
-            <button className="text-blue-600 hover:underline flex items-center gap-1 text-sm">
-              <FiEdit />
-              Edit
-            </button>
-          </div>
-          <div className="space-y-2 text-sm text-gray-700">
-            <p><strong>Email:</strong> {employee.email}</p>
-            <p><strong>Phone:</strong> {employee.phone}</p>
-            <p><strong>Address:</strong> {employee.address}</p>
-          </div>
+          {/* زر Edit Personal Info */}
+          <button
+            onClick={() => setEditPersonal(!editPersonal)}
+            className="flex items-center gap-2 text-[#B79031] hover:underline"
+          >
+            <FiEdit2 />
+            {editPersonal ? ' Save' : 'Edit '}
+          </button>
         </div>
 
-        {/* Work Info */}
-        <div className="bg-white p-6 rounded-xl shadow space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Work Details</h3>
-            <button className="text-blue-600 hover:underline flex items-center gap-1 text-sm">
-              <FiEdit />
-              Edit
+        <div className="mt-10 w-[90%] mx-auto">
+          {/* Personal Info */}
+          <div className="flex justify-between">
+            <h3 className="text-gray-600 text-[18px] font-semibold">
+              First Name: <span className="text-gray-500 font-[400]">{data?.first_name}</span>
+            </h3>
+            <h3 className="text-gray-600 mr-8 text-[18px] font-semibold">
+              Last Name: <span className="text-gray-500 font-[400]">{data?.last_name}</span>
+            </h3>
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <h3 className="text-gray-600 font-semibold">
+              Hire Date: <span className="text-gray-500 font-[400]">{data?.hire_date}</span>
+            </h3>
+            <h3 className="text-gray-600 font-semibold">
+              Phone Number: <span className="text-gray-500 font-[400]">{data?.phone_number}</span>
+            </h3>
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <h3 className="text-gray-600 font-semibold">
+              {/* Position: <span className="text-gray-500 font-[400]">{data?.position_id.title}</span> */}
+            </h3>
+            <h3 className="text-gray-600 mr-30 font-semibold">
+              Salary: <span className="text-gray-500 font-[400]">{data?.salary}</span>
+            </h3>
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <h3 className="text-gray-600 font-semibold">
+              Department: <span className="text-gray-500 font-[400]">{data?.department_id.name}</span>
+            </h3>
+            <h3 className="text-gray-600 mr-30 font-semibold">
+              Status: <span className="text-gray-500 font-[400]">{data?.status}</span>
+            </h3>
+          </div>
+
+          {/* زر Edit Login Info */}
+          <div className="flex justify-between items-center mt-10">
+            <h2 className="text-xl font-bold text-gray-700">Login Data</h2>
+            <button
+              onClick={() => setEditLogin(!editLogin)}
+              className="flex items-center gap-2 text-blue-600 hover:underline"
+            >
+              <FiEdit2 />
+              {editLogin ? 'Cancel Login Edit' : 'Edit Login Info'}
             </button>
           </div>
-          <div className="space-y-2 text-sm text-gray-700">
-            <p><strong>Employee ID:</strong> {employee.employee_id}</p>
-            <p><strong>Position:</strong> {employee.position}</p>
-            <p><strong>Department:</strong> {employee.department}</p>
-            <p><strong>Hire Date:</strong> {employee.hire_date}</p>
-            <p><strong>Status:</strong> {employee.status}</p>
-            <p><strong>Salary:</strong> {employee.salary}</p>
-          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleLoginSubmit} className="mt-4 space-y-4">
+            <div className="space-y-4 max-w-sm p-5 w-full bg-white border shadow-xl border-gray-300 rounded-2xl">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  readOnly={!editLogin}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none ${
+                    editLogin ? 'border-gray-400 bg-white' : 'border-gray-300 bg-gray-100 cursor-default'
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  readOnly={!editLogin}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none ${
+                    editLogin ? 'border-gray-400 bg-white' : 'border-gray-300 bg-gray-100 cursor-default'
+                  }`}
+                />
+              </div>
+
+              {editLogin && (
+                <button
+                  type="submit"
+                  className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                >
+                  Save Login Info
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* Upload Document Section */}
+<div className="mt-10">
+  <h2 className="text-xl font-bold text-gray-700 mb-4">Upload Document</h2>
+
+  <div className="flex items-center gap-4">
+    <input
+      type="file"
+      onChange={handleFileChange}
+      className="block text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer bg-white"
+    />
+
+    <button
+      onClick={handleUpload}
+      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+    >
+      <FiUploadCloud /> Upload
+    </button>
+  </div>
+
+  {/* Selected File Info + Delete Button */}
+  {selectedFile && (
+    <div className="mt-3 flex items-center justify-between bg-gray-100 border border-gray-300 rounded-md p-3 w-full max-w-md">
+      <p className="text-sm text-gray-700 truncate">{selectedFile.name}</p>
+      <button
+        onClick={() => setSelectedFile(null)}
+        className="text-red-500 hover:text-red-700 text-sm font-medium"
+      >
+        Delete
+      </button>
+    </div>
+  )}
+</div>
+
         </div>
       </div>
     </div>

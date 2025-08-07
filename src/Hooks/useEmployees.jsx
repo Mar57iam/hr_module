@@ -6,13 +6,19 @@ export default function useEmployees() {
   const { token } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  const getAllEm = async () => {
+
+  const getAllEm = async (filters = null) => {
+    if (filters && (filters.status || filters.department || filters.position)) {
+      return await getFilteredEmployees(filters);
+    }
+
     const res = await fetch(`https://site46339-a7pcm8.scloudsite101.com/api/v1/employees`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     });
+
     if (!res.ok) throw new Error('Failed to fetch employees');
     return res.json();
   };
@@ -35,7 +41,11 @@ export default function useEmployees() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify({
+        ...updatedData,
+        _method: 'put'
+      }),
+      
     });
     if (!res.ok) throw new Error('Failed to update employee');
     return res.json();
@@ -77,18 +87,16 @@ export default function useEmployees() {
       },
       body: JSON.stringify(newEmployeeData),
     });
-  
+
     const result = await res.json();
-  
+
     if (!res.ok) {
       console.log('Add Employee Response:', result);
-      // ارمي الـ Response كله عشان onError تقدر تقراه
       throw new Response(JSON.stringify(result), { status: res.status });
     }
-  
+
     return result;
   };
-  
 
   const addMutation = useMutation({
     mutationFn: addEmployee,
@@ -96,19 +104,36 @@ export default function useEmployees() {
       queryClient.invalidateQueries(['employees']);
     },
   });
-  
-  
 
+  const getFilteredEmployees = async (filters) => {
+    const params = new URLSearchParams();
 
+    if (filters.status) params.append('status', filters.status);
+    if (filters.department) params.append('department', filters.department);
+    if (filters.position) params.append('position', filters.position);
+
+    const res = await fetch(
+      `https://site46339-a7pcm8.scloudsite101.com/api/v1/search/employees?${params.toString()}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) throw new Error('Failed to fetch filtered employees');
+    return res.json();
+  };
 
   return {
     getAllEm,
     getEmployeeProfile,
     addEmployee,
+    getFilteredEmployees,
     updateMutation,
     deleteMutation,
-    addMutation, 
-
+    addMutation,
   };
 }
 

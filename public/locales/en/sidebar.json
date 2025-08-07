@@ -25,5 +25,8 @@
   "users_management": "Users Management",
   "users_list": "Users List",
   "add_user": "Add User",
-   "my_profile": "My Profile"
+   "my_profile": "My Profile",
+   "documents": "Documents",
+  "documents_list": "All Documents",
+  "add_document": "Add Document"
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   FiPlus,
   FiEdit2,
@@ -18,7 +18,6 @@ import { useRouter } from 'next/navigation';
 
 export default function DepartmentsPage() {
   const router = useRouter();
-
   const {
     updateDepartment,
     departments,
@@ -30,38 +29,20 @@ export default function DepartmentsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [openDropdownId, setOpenDropdownId] = useState(null);
 
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredDepartments, setFilteredDepartments] = useState([]);
-
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    setFilteredDepartments(departments || []);
-  }, [departments]);
-
-  const handleSearch = (term) => {
-    if (!departments) return;
-
-    const filtered = departments.filter((dep) =>
-      dep.name.toLowerCase().includes(term.toLowerCase())
+  const filteredDepartments = useMemo(() => {
+    if (!departments) return [];
+    return departments.filter((dep) =>
+      dep.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredDepartments(filtered);
-  };
-
-  const handleUpdateDepartment = async (updatedDepartment) => {
-    try {
-      await updateDepartment.mutateAsync(updatedDepartment);
-      toast.success('Department updated successfully!');
-    } catch (error) {
-      console.error('Error updating department:', error);
-      toast.error('Failed to update department.');
-    }
-  };
+  }, [departments, searchTerm]);
 
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -73,12 +54,32 @@ export default function DepartmentsPage() {
         setOpenDropdownId(null);
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleUpdateDepartment = async (updatedDepartment) => {
+    try {
+      await updateDepartment.mutateAsync(updatedDepartment);
+      toast.success('Department updated successfully!');
+    } catch (error) {
+      console.error('Error updating department:', error);
+      toast.error('Failed to update department.');
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteDepartment.mutateAsync(departmentToDelete);
+      toast.success('Department deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting department:', error);
+      toast.error('Failed to delete department.');
+    } finally {
+      setShowConfirm(false);
+      setDepartmentToDelete(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -91,28 +92,19 @@ export default function DepartmentsPage() {
   return (
     <section className="min-h-screen bg-white px-4 py-8 md:ml-[280px]">
       <div className="flex justify-between">
-        <h2 className="text-2xl font-bold text-gray-700 mb-4">
-          Department Management
-        </h2>
-
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#B79031] text-white rounded-md hover:bg-[#a07f2d] transition"
-          >
-            <FiPlus /> Add Department
-          </button>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-700 mb-4">Department Management</h2>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-[#B79031] text-white rounded-md hover:bg-[#a07f2d] transition"
+        >
+          <FiPlus /> Add Department
+        </button>
       </div>
 
       <SearchInput
         value={searchTerm}
-        onChange={(e) => {
-          const term = e.target.value;
-          setSearchTerm(term);
-          handleSearch(term);
-        }}
-        onSearch={() => handleSearch(searchTerm)}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onSearch={() => {}}
         placeholder="Search departments..."
         className="mb-6"
       />
@@ -121,59 +113,28 @@ export default function DepartmentsPage() {
         <table className="w-full sm:min-w-[1000px] divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Head Department
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Description
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                Actions
-              </th>
+              {['ID', 'Name', 'Head Department', 'Email', 'Role', 'Description', 'Actions'].map((header) => (
+                <th key={header} className="px-6 py-3 text-left text-xs font-medium text-gray-500">{header}</th>
+              ))}
             </tr>
           </thead>
-
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredDepartments?.map((dep) => (
+            {filteredDepartments.map((dep) => (
               <tr
                 key={dep.id}
                 onClick={() => router.push(`/departments/${dep.id}`)}
-                className="hover:bg-gray-50 relative cursor-pointer"
+                className="hover:bg-gray-50 cursor-pointer relative"
               >
                 <td className="px-6 py-4 text-sm text-gray-700">{dep.id}</td>
-
                 <td className="px-6 py-4 text-sm text-gray-700">{dep.name}</td>
-
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {dep.user_id?.name || '-'}
-                </td>
-
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {dep.user_id?.email || '-'}
-                </td>
-
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {dep.user_id?.role || '-'}
-                </td>
-
+                <td className="px-6 py-4 text-sm text-gray-700">{dep.user_id?.name || '-'}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{dep.user_id?.email || '-'}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{dep.user_id?.role || '-'}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   {dep.description?.length > 50
-                    ? dep.description.slice(0, 30) + '...'
+                    ? `${dep.description.slice(0, 30)}...`
                     : dep.description}
                 </td>
-
                 <td
                   className="px-6 py-4 text-sm relative"
                   onClick={(e) => e.stopPropagation()}
@@ -242,18 +203,7 @@ export default function DepartmentsPage() {
           setShowConfirm(false);
           setDepartmentToDelete(null);
         }}
-        onConfirm={async () => {
-          try {
-            await deleteDepartment.mutateAsync(departmentToDelete);
-            toast.success('Department deleted successfully!');
-          } catch (error) {
-            console.error('Error deleting department:', error);
-            toast.error('Failed to delete department.');
-          } finally {
-            setShowConfirm(false);
-            setDepartmentToDelete(null);
-          }
-        }}
+        onConfirm={handleDelete}
       />
     </section>
   );
