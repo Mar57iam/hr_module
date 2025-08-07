@@ -29,12 +29,7 @@ const metadata = {
 let query = new QueryClient()
 
 export default function RootLayout({ children }) {
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    setUser(localStorage.getItem("user"))
-    return () => setUser(null)
-  }, [])
   return (
     <html lang="en">
       <body
@@ -44,10 +39,7 @@ export default function RootLayout({ children }) {
         <AuthContextProvider>
           <TranslationProvider>
             {/* <Navbar/> */}
-            {user ?
-              <Sidebar />
-              : <></>
-            }
+            <Sidebar />
             <ReactQueryProvider>
               <Toaster position="top-center" reverseOrder={false} />
               <ProtectRoute>

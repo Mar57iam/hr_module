@@ -16,6 +16,8 @@ import useTranslation from '@/Hooks/useTranslation';
 
 export default function Sidebar() {
   const { token, role, logoutUserFunc } = useContext(AuthContext);
+  console.log(token)
+  if (!token) return <></>
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
