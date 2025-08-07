@@ -1,10 +1,10 @@
 import React from 'react'
-import AllDocuments from './AllDocuments'
+import AllDoc from './AllDoc'
 
 export default function page() {
   return (
     <div>
-      <AllDocuments/>
+    <AllDoc/>
     </div>
   )
 }

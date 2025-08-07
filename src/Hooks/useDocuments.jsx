@@ -1,51 +1,31 @@
-// 'use client';
 
-// import { AuthContext } from "@/Context/AuthContext";
-// import { useQuery } from "@tanstack/react-query";
-// import { useContext } from "react";
+import { AuthContext } from '@/Context/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { useContext } from 'react';
 
-// export default function useDocuments() {
-//   const { token } = useContext(AuthContext);
 
-//   // fetch function
-//   async function alldocuments() {
-//     const res = await fetch(
-//       "http://site46339-a7pcm8.scloudsite101.com/api/v1/documents",
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+export default function useDocuments() {
+  const { token } = useContext(AuthContext);
 
-//     if (!res.ok) {
-//       throw new Error("Failed to fetch documents");
-//     }
+  const getDocuments = async () => {
+    const res = await fetch(
+      'https://site46339-a7pcm8.scloudsite101.com/api/v1/documents',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-//     const finalRes = await res.json();
-//     return finalRes.documents; // حسب شكل البيانات الراجعة
-//   }
+    const finaldoc = await res.json();
+    return finaldoc.documents; 
+  };
 
-//   // useQuery
-//   const {
-//     data: documents,
-//     isLoading,
-//     isError,
-//     error,
-//   } = useQuery({
-//     queryKey: ["documents"],
-//     queryFn: alldocuments,
-//     staleTime: 1000 * 60 * 5, // 5 دقائق
-//     cacheTime: 1000 * 60 * 10, // 10 دقائق
-//   });
+  const {
+    data: documents, isLoading,isError,} = useQuery({
+    queryKey: ['documents'],
+    queryFn: getDocuments,
+  });
 
- 
-//   return {
-//     documents,
-//     isLoading,
-//     isError,
-//     error,
-//   };
-// }
+  return { documents, isLoading, isError };
+}
