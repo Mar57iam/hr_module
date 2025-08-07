@@ -20,7 +20,7 @@ export default function AuthContextProvider({ children }) {
     const savedToken = Cookies.get('token');
     if (savedToken) {
       setToken(savedToken);
-      setTempToken(savedToken); 
+      setTempToken(savedToken);
     }
   }, []);
 
@@ -42,7 +42,7 @@ export default function AuthContextProvider({ children }) {
   async function loginUserFunc(values) {
     try {
       const { data } = await axiosInstance.post(`/auth/login`, values);
-   
+
 
       if (data.message === 'MFA required') {
         setTempToken(data.temp_token);
@@ -63,7 +63,7 @@ export default function AuthContextProvider({ children }) {
         return;
       }
     } catch (error) {
-     
+
       throw error;
     }
   }
@@ -73,7 +73,7 @@ export default function AuthContextProvider({ children }) {
       const authHeader = tempToken || Cookies.get('token');
 
       await axiosInstance.post(
-        '/2fa/enable',{},
+        '/2fa/enable', {},
         {
           headers: {
             Authorization: `Bearer ${authHeader}`,
@@ -90,7 +90,7 @@ export default function AuthContextProvider({ children }) {
       setQrCode(data.qr_code_svg);
       return data.qr_code_svg;
     } catch (err) {
-      
+
       throw err;
     }
   }
@@ -98,44 +98,44 @@ export default function AuthContextProvider({ children }) {
   async function verifyMfaFunc(code) {
     try {
       const authHeader = tempToken || Cookies.get('token');
-  
+
       // console.log(' MFA Code Sent:', code);
       // console.log(' Auth Header:', authHeader);
-  
+
       const { data } = await axiosInstance.post(
         '/2fa/verify',
-        { code }, 
+        { code },
         {
           headers: {
             Authorization: `Bearer ${authHeader}`,
           },
         }
       );
-      
-  
+
+
       Cookies.set('token', data.access_token, {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
       });
-  
+
       setToken(data.access_token);
       await getMeFunc();
       router.push('/dashboard');
-  
+
       return data;
     } catch (error) {
       // console.error('Verification Error:', error.response?.data || error.message);
       throw error;
     }
   }
-  
+
 
   async function logoutUserFunc() {
     const authHeader = Cookies.get('token');
-  
+
     try {
-      await axiosInstance.delete('/2fa/disable', {
+      axiosInstance.delete('/2fa/disable', {
         headers: {
           Authorization: `Bearer ${authHeader}`,
         },
@@ -143,14 +143,14 @@ export default function AuthContextProvider({ children }) {
     } catch (err) {
       // console.error(' Logout Error:', err.response?.data || err.message);
     }
-  
+
 
     Cookies.remove('token');
     setToken(null);
     setTempToken(null);
     router.push('/');
   }
-  
+
 
   async function getMeFunc() {
     try {
@@ -158,7 +158,7 @@ export default function AuthContextProvider({ children }) {
       setRole(data.user.role);
       return data;
     } catch (error) {
-    
+
       throw error;
     }
   }
@@ -168,10 +168,10 @@ export default function AuthContextProvider({ children }) {
       const { data } = await axiosInstance.post('/auth/refresh');
       Cookies.set('token', data.access_token, { expires: 1 });
       setToken(data.access_token);
-      
+
       return data.access_token;
     } catch (error) {
-      
+
       logoutUserFunc();
       throw error;
     }
@@ -180,7 +180,7 @@ export default function AuthContextProvider({ children }) {
   async function forgetPasswordFunc(email) {
     try {
       const { data } = await axiosInstance.post(`/auth/forgot-password`, { email });
-      
+
       return data;
     } catch (error) {
 
@@ -194,10 +194,10 @@ export default function AuthContextProvider({ children }) {
         `/auth/reset-password?token=${values.token}&email=${values.email}`,
         { password: values.password }
       );
-    
+
       return data;
     } catch (error) {
-      
+
       throw error;
     }
   }
@@ -207,7 +207,7 @@ export default function AuthContextProvider({ children }) {
       value={{
         loginUserFunc,
         verifyMfaFunc,
-        enableMfaFunc, 
+        enableMfaFunc,
         logoutUserFunc,
         getMeFunc,
         refreshTokenFunc,

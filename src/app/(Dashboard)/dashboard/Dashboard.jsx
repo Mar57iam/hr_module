@@ -9,38 +9,22 @@ import { AuthContext } from '@/Context/AuthContext';
 import AdmainDashboard from './AdmainDashboard';
 import EmDashboard from './EmDashboard';
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const router = useRouter();
   const { getMeFunc } = useContext(AuthContext);
   const [role, setRole] = useState(null);
-
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const user = await getMeFunc();
-        if (user?.user?.role) {
-          setRole(user.user.role);
-        } else {
-          router.push('/');
-        }
-      } catch (error) {
-        router.push('/');
-      }
-    }
-  
-    fetchUser();
-  }, []);
-  
+    setRole(localStorage.getItem("user").role)
+  }, [])
 
-  if (!role) return <p>Loading...</p>;
 
   if (role === 'admin' || role === 'manager') {
     return <AdmainDashboard />;
   }
-
   if (role === 'employee') {
     return <EmDashboard />;
   }
 
-  return null;
+  return <p>Loading...</p>;
 }
+

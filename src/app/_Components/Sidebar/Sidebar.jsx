@@ -5,13 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  MdDashboard,
-  MdPersonAdd, MdPeople, MdAccessTime, MdAttachMoney,
+  MdDashboard, MdPersonAdd, MdPeople, MdAccessTime, MdAttachMoney,
   MdBarChart, MdSettings, MdLogout, MdList,
   MdGroup, MdBusiness, MdPlaylistAdd,
-  MdFileUpload,
-  MdPerson,
-  MdEvent,
+  MdFileUpload, MdPerson, MdEvent,
 } from 'react-icons/md';
 import { AuthContext } from '@/Context/AuthContext';
 import Tbutton from '../Tbutton/Tbutton';
@@ -21,7 +18,6 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { t, i18n } = useTranslation('sidebar');
-
   const isRTL = i18n.language === 'ar';
 
   const sections = useMemo(() => ([
@@ -97,13 +93,10 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} w-[280px] h-screen bg-white dark:bg-gray-800 shadow-xl rounded-xl flex flex-col justify-between px-3 py-4 overflow-y-auto transform transition-transform duration-200 ${
-          isOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'
-        } sm:translate-x-0`}
+        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} w-[280px] h-screen bg-white dark:bg-gray-800 shadow-xl rounded-xl flex flex-col justify-between px-3 py-4 overflow-y-auto transform transition-transform duration-200 ${isOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'} sm:translate-x-0`}
         dir={isRTL ? 'rtl' : 'ltr'}
       >
         <div className="h-full flex flex-col justify-between">
-
           {/* Logo */}
           <div className="flex mt-10 flex-col items-center">
             <img
@@ -127,11 +120,7 @@ export default function Sidebar() {
                     <li key={section.key}>
                       <Link
                         href={section.href}
-                        className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 px-4 py-2 rounded-lg transition-colors text-base ${
-                          isActive
-                            ? 'bg-[#B79031] text-white dark:bg-gray-700'
-                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
+                        className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 px-4 py-2 rounded-lg transition-colors text-base ${isActive ? 'bg-[#B79031] text-white dark:bg-gray-700' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'}`}
                         onClick={() => setIsOpen(false)}
                       >
                         <span className="text-2xl">{section.icon}</span>
@@ -153,11 +142,7 @@ export default function Sidebar() {
                           <li key={sub.key}>
                             <Link
                               href={sub.href}
-                              className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 px-4 py-2 rounded-md transition-colors text-sm ${
-                                pathname.startsWith(sub.href)
-                                  ? 'bg-[#B79031] text-white dark:bg-gray-700'
-                                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
-                              }`}
+                              className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 px-4 py-2 rounded-md transition-colors text-sm ${pathname.startsWith(sub.href) ? 'bg-[#B79031] text-white dark:bg-gray-700' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'}`}
                             >
                               <span className="text-base">{sub.icon}</span>
                               <span>{sub.label}</span>
