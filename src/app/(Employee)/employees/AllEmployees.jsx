@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import useEmployees from '@/Hooks/useEmployees';
 import EmployeeFilter from './EmployeeFilter';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../Confirm';
-// import { useTranslation } from 'react-i18next';
 import EmEdModal from './EmEdModal';
 import useTranslation from '@/Hooks/useTranslation';
 
@@ -192,12 +191,12 @@ export default function AllEmployees() {
       )}
 
 
-      <ConfirmModal
+      {/* <ConfirmModal
         show={showConfirm}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         message={t('confirm_delete')}
-      />
+      /> */}
     </section>
   </>
 }
