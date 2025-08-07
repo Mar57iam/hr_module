@@ -1,16 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  FiMoreVertical,
-  FiEdit2,
-  FiTrash2,
-  FiUser,
-} from 'react-icons/fi';
-import EmployeeFilter from './EmployeeFilter';
-import useEmployees from '@/Hooks/useEmployees';
-import { useRouter } from 'next/navigation';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import useEmployees from '@/Hooks/useEmployees';
+import EmployeeFilter from './EmployeeFilter';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../Confirm';
 // import { useTranslation } from 'react-i18next';
@@ -18,18 +12,34 @@ import EmEdModal from './EmEdModal';
 import useTranslation from '@/Hooks/useTranslation';
 
 export default function AllEmployees() {
+  const [filters, setFilters] = useState({
+    status: '',
+    department: '',
+    position: '',
+  });
+
+  const { getAllEm, deleteMutation, updateMutation } = useEmployees();
   const { t, lang, setLang } = useTranslation('employees');
   const [isRTL, setRTL] = useState(lang === 'ar');
   useEffect(() => {
     setRTL(lang === 'ar')
   }, [lang])
-  const { getAllEm, deleteMutation, updateMutation } = useEmployees();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['employees'],
-    queryFn: getAllEm,
-  });
 
   const router = useRouter();
+
+  const handleFilterChange = useCallback((newFilters) => {
+    setFilters(newFilters);
+  }, []);
+
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['employees', filters],
+    queryFn: () => getAllEm(filters),
+    keepPreviousData: true,
+  });
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -40,53 +50,34 @@ export default function AllEmployees() {
 
   const dropdownRefs = useRef({});
 
-  const toggleDropdown = (id) => {
-    setOpenDropdownId((prev) => (prev === id ? null : id));
-  };
+  const columns = useMemo(() => ([
+    { label: 'ID', key: 'id' },
+    { label: 'Name', key: 'name' },
+    { label: 'Department', key: 'department' },
+    { label: 'Position', key: 'position' },
+    { label: 'Status', key: 'status' },
+    { label: 'Hire Date', key: 'hireDate' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Actions', key: 'actions' },
+  ]), []);
 
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (
-        openDropdownId &&
-        dropdownRefs.current[openDropdownId] &&
-        !dropdownRefs.current[openDropdownId].contains(e.target)
-      ) {
-        setOpenDropdownId(null);
-      }
-    }
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <span className="loader" />
+      </div>
+    );
+  }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openDropdownId]);
+  if (isError) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center text-red-500 font-semibold">
+        Something went wrong while loading employees.
+      </div>
+    );
+  }
 
-  const handleDeleteClick = (id) => {
-    setSelectedId(id);
-    setShowConfirm(true);
-  };
-
-  const handleEditClick = (emp) => {
-    setSelectedEmployee(emp);
-    setIsEditModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    toast.promise(deleteMutation.mutateAsync(selectedId), {
-      loading: t('deleting'),
-      success: t('success_delete'),
-      error: t('error_delete'),
-    });
-    setShowConfirm(false);
-  };
-
-  const handleCancelDelete = () => {
-    setShowConfirm(false);
-    setSelectedId(null);
-  };
-
-  if (isLoading) return <p>{t('loading')}</p>;
-  if (isError) return <p>{t('error')}</p>;
-
-  return (
+  return <>
     <section
       dir={isRTL ? 'rtl' : 'ltr'}
       className={`mt-4 ml-0 mx-auto px-4 ${isRTL ? 'md:mr-[300px]' : 'md:ml-[300px]'
@@ -98,65 +89,45 @@ export default function AllEmployees() {
         </h2>
       </div>
 
-      <EmployeeFilter />
+      <EmployeeFilter onFilterChange={handleFilterChange} />
 
       <div className="w-full overflow-x-auto rounded-lg shadow-sm bg-white">
         <table className="w-full min-w-[800px] divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('id')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('name')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('department')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('position')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('status')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('hire_date')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('phone')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                {t('actions')}
-              </th>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
+                >
+                  {col.label}
+                </th>
+              ))}
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {data?.employees?.map((emp) => (
-              <tr key={emp.id} className="relative">
+              <tr key={emp.id}>
                 <td className="px-6 py-4 whitespace-nowrap">{emp.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {emp.first_name} {emp.last_name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.department_id?.name}
+                  {emp.department_id?.name || '—'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.position_id?.title}
+                  {emp.position_id?.title || '—'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{emp.status}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{emp.hire_date}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{emp.phone_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.phone_number}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap relative">
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDropdown(emp.id);
-                    }}
-                    className="p-1.5 rounded hover:bg-gray-100"
+                    onClick={() => router.push(`/employees/${emp.id}`)}
+                    className="text-sm font-medium text-blue-600 hover:underline"
                   >
-                    <FiMoreVertical />
+                    View Profile
                   </button>
 
                   {openDropdownId === emp.id && (
@@ -228,7 +199,5 @@ export default function AllEmployees() {
         message={t('confirm_delete')}
       />
     </section>
-  );
+  </>
 }
-
-

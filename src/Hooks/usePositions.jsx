@@ -6,7 +6,7 @@ export function usePositions() {
   const { token } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  // ✅ Get All Positions
+  
   const { data: positions, isLoading, isError } = useQuery({
     queryKey: ['positions'],
     queryFn: async () => {
@@ -20,7 +20,6 @@ export function usePositions() {
     },
   });
 
-  // ✅ Add Position
   const addPosition = useMutation({
     mutationFn: async (newPosition) => {
       const res = await fetch('https://site46339-a7pcm8.scloudsite101.com/api/v1/positions', {

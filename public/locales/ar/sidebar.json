@@ -24,8 +24,11 @@
   "users_management": "إدارة المستخدمين",
   "users_list": "قائمة المستخدمين",
   "add_user": "إضافة مستخدم",
-  "logout": "تسجيل الخروج", 
-  "my_profile": "ملفي الشخصي"
+  "logout": "تسجيل الخروج",
+  "my_profile": "ملفي الشخصي",
+  "documents": "الملفات",
+  "documents_list": "كل الملفات",
+  "add_document": "إضافة ملف"
 }
 
 

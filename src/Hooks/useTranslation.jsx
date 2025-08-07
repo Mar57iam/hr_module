@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 
-const LOAD_PATH = '/locales/{{lng}}/{{ns}}.json';
 
 export default function useTranslation(page) {
-    const [ lang, setLang ] = useState('en');
-    const [ langDict, setLangDict ] = useState({});
+    const [lang, setLang] = useState('en');
+    const [langDict, setLangDict] = useState({});
 
     // useEffect(() => {
     //     setLang(localStorage.getItem("lang") || "en")
@@ -12,6 +11,7 @@ export default function useTranslation(page) {
 
     // useEffect(() => {
     //     function loadLang(lang) {
+    //         const LOAD_PATH = '/locales/{{lng}}/{{ns}}.json';
     //         const load_path = LOAD_PATH.replace("{{lng}}", lang).replace("{{ns}}", page)
     //         fetch(load_path)
     //             .then((res) => res.json())
@@ -22,8 +22,8 @@ export default function useTranslation(page) {
     //     localStorage.setItem("lang", lang)
     //     loadLang(lang)
     // }, [])
-    
-    
+
+
     function t(word) {
         const dict = langDict[lang]
         if (dict) return dict[word]

@@ -1,11 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
-  FiPlus,
-  FiEdit2,
-  FiTrash2,
-  FiMoreVertical,
+  FiPlus, FiEdit2, FiTrash2, FiMoreVertical
 } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -23,15 +20,11 @@ export default function UsersPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-
   const [searchValue, setSearchValue] = useState('');
 
   const dropdownRef = useRef(null);
 
-  const toggleDropdown = (id) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
-  };
-
+  
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -39,15 +32,23 @@ export default function UsersPage() {
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleEdit = (user) => {
+  
+  const toggleDropdown = useCallback((id) => {
+    setOpenDropdownId(prev => (prev === id ? null : id));
+  }, []);
+
+  const handleEdit = useCallback((user) => {
     setSelectedUser(user);
     setIsEditModalOpen(true);
-  };
+  }, []);
+
+  const handleDelete = useCallback((user) => {
+    setUserToDelete(user);
+    setIsConfirmModalOpen(true);
+  }, []);
 
   const handleUpdateSubmit = async (data) => {
     try {
@@ -55,21 +56,16 @@ export default function UsersPage() {
       toast.success('User updated successfully');
       setIsEditModalOpen(false);
       setSelectedUser(null);
-    } catch (err) {
+    } catch {
       toast.error('Failed to update user');
     }
-  };
-
-  const handleDelete = (user) => {
-    setUserToDelete(user);
-    setIsConfirmModalOpen(true);
   };
 
   const confirmDelete = async () => {
     try {
       await deleteUser.mutateAsync(userToDelete.id);
       toast.success('User deleted successfully');
-    } catch (err) {
+    } catch {
       toast.error('Failed to delete user');
     } finally {
       setIsConfirmModalOpen(false);
@@ -77,16 +73,19 @@ export default function UsersPage() {
     }
   };
 
-  const filteredUsers = users?.filter(user =>
-    user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchValue.toLowerCase()) ||
-    user.id.toString().includes(searchValue)
-  );
+  const filteredUsers = useMemo(() => {
+    if (!users) return [];
+    return users.filter(user =>
+      user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+      user.id.toString().includes(searchValue)
+    );
+  }, [searchValue, users]);
 
   if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
-        <span className="loader" />
+        <div className="animate-pulse text-gray-400 text-lg">Loading users...</div>
       </div>
     );
   }
@@ -105,7 +104,6 @@ export default function UsersPage() {
       <div className="flex justify-between mb-6 flex-wrap gap-4">
         <h2 className="text-2xl ml-8 font-bold text-gray-700">Users Management</h2>
 
-       
         <button
           onClick={() => router.push('/addUser')}
           className="flex items-center gap-2 px-4 py-2 bg-[#B79031] text-white rounded-md hover:bg-[#a07f2d] transition"
@@ -118,32 +116,29 @@ export default function UsersPage() {
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
         placeholder="Search by name, email, or ID"
-        onSearch={() => {}}
-        className = 'ml-5'
+        className="ml-5"
       />
-
-      
 
       <div className="w-[98%] mx-auto overflow-x-auto rounded-lg shadow-sm bg-white mt-4">
         <table className="w-full sm:min-w-[800px] divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Role</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Actions</th>
+              {['ID', 'Name', 'Email', 'Role', 'Actions'].map((col) => (
+                <th key={col} className="px-6 py-3 text-left text-xs font-medium text-gray-500">
+                  {col}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredUsers?.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
                   No data to show.
                 </td>
               </tr>
             ) : (
-              filteredUsers?.map(user => (
+              filteredUsers.map(user => (
                 <tr key={user.id} className="hover:bg-gray-50 relative">
                   <td className="px-6 py-4 text-sm text-gray-700">{user.id}</td>
                   <td className="px-6 py-4 text-sm text-gray-700">{user.name}</td>

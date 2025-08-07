@@ -1,28 +1,20 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  MdDashboard,
-  MdPersonAdd, MdPeople, MdAccessTime, MdAttachMoney,
+  MdDashboard, MdPersonAdd, MdPeople, MdAccessTime, MdAttachMoney,
   MdBarChart, MdSettings, MdLogout, MdList,
   MdGroup, MdBusiness, MdPlaylistAdd,
-  MdFileUpload,
-  MdPerson,
-  MdEvent,
+  MdFileUpload, MdPerson, MdEvent,
 } from 'react-icons/md';
-import Tbutton from '../Tbutton/Tbutton';
 import { AuthContext } from '@/Context/AuthContext';
-
+import Tbutton from '../Tbutton/Tbutton';
 
 export default function Sidebar() {
-
   const { token, role, logoutUserFunc } = useContext(AuthContext);
-
-
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,132 +22,64 @@ export default function Sidebar() {
 
   const isRTL = i18n.language === 'ar';
 
-  console.log('role is', role);
-
+  const sections = useMemo(() => ([
+    {
+      type: 'link', key: 'dashboard', href: '/dashboard', icon: <MdDashboard />,
+    },
+    {
+      type: 'section', key: 'employees', icon: <MdPeople />, children: [
+        { key: 'employee_list', href: '/employees', icon: <MdGroup /> },
+        { key: 'register_employee', href: '/addEm', icon: <MdPersonAdd /> },
+      ]
+    },
+    {
+      type: 'section', key: 'documents', icon: <MdFileUpload />, children: [
+        { key: 'documents_list', href: '/allDocuments', icon: <MdList /> },
+        { key: 'add_document', href: '/documents/new', icon: <MdFileUpload /> }
+      ]
+    },
+    {
+      type: 'section', key: 'organization', icon: <MdBusiness />, children: [
+        { key: 'departments', href: '/departments', icon: <MdBusiness /> },
+        { key: 'positions', href: '/positions', icon: <MdPlaylistAdd /> },
+      ]
+    },
+    {
+      type: 'section', key: 'users_management', icon: <MdPerson />, children: [
+        { key: 'users_list', href: '/users', icon: <MdGroup /> },
+        { key: 'add_user', href: '/addUser', icon: <MdPersonAdd /> },
+      ]
+    },
+    {
+      type: 'section', key: 'attendance', icon: <MdAccessTime />, children: [
+        { key: 'Clock', href: '/attendanceClock', icon: <MdAccessTime /> },
+        { key: 'Manual Attendance', href: '/manualAttendance', icon: <MdPerson /> },
+        { key: 'reports', href: '/attendanceReports', icon: <MdBarChart /> },
+      ]
+    },
+    {
+      type: 'section', key: 'leave_management', icon: <MdEvent />, children: [
+        { key: 'request_leave', href: '/leaveRequest', icon: <MdFileUpload /> },
+        { key: 'pending_requests', href: '/pendingLeaves', icon: <MdList /> },
+        { key: 'leave_calendar', href: '/leaveCalendar', icon: <MdAccessTime /> },
+        { key: 'leave_balances', href: '/leaveBalances', icon: <MdAttachMoney /> },
+        { key: 'my_profile', href: '/myProfile', icon: <MdPerson /> },
+      ]
+    }
+  ].map(section => ({
+    ...section,
+    label: t(section.key),
+    children: section.children?.map(child => ({
+      ...child,
+      label: t(child.key)
+    }))
+  }))), [i18n.language]);
 
   if (!token) return null;
 
-
-
-
-  const sections = [
-    { type: 'link', key: 'dashboard', href: '/dashboard', icon: <MdDashboard /> },
-    {
-      type: 'section',
-      key: 'employees',
-      icon: <MdPeople />,
-      children: [
-        {
-          key: 'employee_list',
-          href: '/employees',
-          icon: <MdGroup />,
-        },
-        {
-          key: 'register_employee',
-          href: '/addEm',
-          icon: <MdPersonAdd />,
-        },
-      ],
-    },
-    {
-      type: 'section',
-      key: 'organization',
-      icon: <MdBusiness />,
-      children: [
-        {
-          key: 'departments',
-          href: '/departments',
-          icon: <MdBusiness />,
-        },
-        {
-          key: 'positions',
-          href: '/positions',
-          icon: <MdPlaylistAdd />,
-        },
-      ],
-    },
-
-
-    {
-      type: 'section',
-      key: 'users_management',
-      icon: <MdPerson />,
-      children: [
-        {
-          key: 'users_list',
-          href: '/users',
-          icon: <MdGroup />,
-        },
-        {
-          key: 'add_user',
-          href: '/addUser',
-          icon: <MdPersonAdd />,
-        },
-      ],
-    },
-
-    {
-      type: 'section',
-      key: 'attendance',
-      icon: <MdAccessTime />,
-      children: [
-        {
-          key: 'Clock',
-          href: '/attendanceClock',
-          icon: <MdAccessTime />,
-        },
-        {
-          key: 'Manual Attendance',
-          href: '/manualAttendance',
-          icon: <MdPerson />,
-        },
-        {
-          key: 'reports',
-          href: '/attendanceReports',
-          icon: <MdBarChart />,
-        },
-      ],
-    },
-
-    {
-      type: 'section',
-      key: 'leave_management',
-      icon: <MdEvent />,
-      children: [
-        {
-          key: 'request_leave',
-          href: '/leaveRequest',
-          icon: <MdFileUpload />,
-        },
-        {
-          key: 'pending_requests',
-          href: '/pendingLeaves',
-          icon: <MdList />,
-        },
-        {
-          key: 'leave_calendar',
-          href: '/leaveCalendar',
-          icon: <MdAccessTime />,
-        },
-        {
-          key: 'leave_balances',
-          href: '/leaveBalances',
-          icon: <MdAttachMoney />,
-        },
-        {
-          type: 'link',
-          key: 'my_profile',
-          href: '/myProfile',
-          icon: <MdPerson />,
-        },
-
-      ],
-    },
-  ];
-
   return (
     <>
-
+      {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`sm:hidden fixed top-4 ${isRTL ? 'right-4' : 'left-4'} z-50 p-2 bg-gray-200 rounded-md dark:bg-gray-700`}
@@ -169,26 +93,23 @@ export default function Sidebar() {
         </svg>
       </button>
 
-
+      {/* Sidebar */}
       <aside
-        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} w-[280px] h-screen bg-white dark:bg-gray-800 shadow-xl rounded-xl flex flex-col justify-between px-3 py-4 overflow-y-auto transform transition-transform duration-300 ${isOpen
-            ? 'translate-x-0'
-            : isRTL
-              ? 'translate-x-full'
-              : '-translate-x-full'
-          } sm:translate-x-0`}
+        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} w-[280px] h-screen bg-white dark:bg-gray-800 shadow-xl rounded-xl flex flex-col justify-between px-3 py-4 overflow-y-auto transform transition-transform duration-200 ${isOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'} sm:translate-x-0`}
         dir={isRTL ? 'rtl' : 'ltr'}
       >
         <div className="h-full flex flex-col justify-between">
           {/* Logo */}
-          {/* <div className="flex mt-10 flex-col items-center">
-            <Image
-             src="/images/logo2.svg"
-              alt="Logo" width={140} height={140} 
-              className="mb-4" 
-              priority={true}
-              />
-          </div> */}
+          <div className="flex mt-10 flex-col items-center">
+            <img
+              src="/images/logo2.svg"
+              alt="Logo"
+              width={140}
+              height={140}
+              className="mb-4"
+              loading="lazy"
+            />
+          </div>
 
           {/* Links */}
           <div className="flex-1 flex flex-col justify-start overflow-y-auto">
@@ -201,14 +122,11 @@ export default function Sidebar() {
                     <li key={section.key}>
                       <Link
                         href={section.href}
-                        className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 px-4 py-2 rounded-lg transition-colors text-base ${isActive
-                            ? 'bg-[#B79031] text-white dark:bg-gray-700'
-                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                          }`}
+                        className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 px-4 py-2 rounded-lg transition-colors text-base ${isActive ? 'bg-[#B79031] text-white dark:bg-gray-700' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'}`}
                         onClick={() => setIsOpen(false)}
                       >
                         <span className="text-2xl">{section.icon}</span>
-                        <span>{t(section.key)}</span>
+                        <span>{section.label}</span>
                       </Link>
                     </li>
                   );
@@ -219,20 +137,17 @@ export default function Sidebar() {
                     <li key={section.key}>
                       <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-3 px-4 py-2 text-gray-500 uppercase tracking-wide text-xs dark:text-gray-400`}>
                         <span className="text-lg">{section.icon}</span>
-                        <span>{t(section.key)}</span>
+                        <span>{section.label}</span>
                       </div>
                       <ul className="ml-8 mt-1 space-y-1">
                         {section.children.map(sub => (
                           <li key={sub.key}>
                             <Link
                               href={sub.href}
-                              className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 px-4 py-2 rounded-md transition-colors text-sm ${pathname.startsWith(sub.href)
-                                  ? 'bg-[#B79031] text-white dark:bg-gray-700'
-                                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
-                                }`}
+                              className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 px-4 py-2 rounded-md transition-colors text-sm ${pathname.startsWith(sub.href) ? 'bg-[#B79031] text-white dark:bg-gray-700' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'}`}
                             >
                               <span className="text-base">{sub.icon}</span>
-                              <span>{t(sub.key)}</span>
+                              <span>{sub.label}</span>
                             </Link>
                           </li>
                         ))}
@@ -240,6 +155,8 @@ export default function Sidebar() {
                     </li>
                   );
                 }
+
+                return null;
               })}
             </ul>
           </div>
