@@ -8,7 +8,6 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import useEmployees from '@/Hooks/useEmployees';
-import Protected from '@/app/_Components/ProutectedRoute/Protected';
 
 const employeeSchema = z.object({
   first_name: z.string().min(3, 'validation.first_name_min'),
@@ -120,7 +119,6 @@ export default function RegisterEmployee() {
   const directionClass = useMemo(() => (isRTL ? 'rtl md:mr-[280px]' : 'ltr md:ml-[280px]'), [isRTL]);
 
   return (
-    <Protected>
       <section dir={isRTL ? 'rtl' : 'ltr'} className={`min-h-screen flex flex-col px-4 pt-10 ${directionClass}`}>
         <div className={`${isRTL ? 'md:mr-48' : 'md:ml-48'} md:mb-12`}>
           <h2 className="text-3xl font-bold text-gray-700">{t('register_employee')}</h2>
@@ -153,7 +151,6 @@ export default function RegisterEmployee() {
           </button>
         </form>
       </section>
-    </Protected>
   );
 }
 

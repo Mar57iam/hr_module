@@ -15,18 +15,16 @@ import Tbutton from '../Tbutton/Tbutton';
 import useTranslation from '@/Hooks/useTranslation';
 
 export default function Sidebar() {
-  const { token, role, logoutUserFunc } = useContext(AuthContext);
-  console.log(token)
-  if (!token) return <></>
+  const { token, logoutUserFunc } = useContext(AuthContext);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
+  
   const { t, lang } = useTranslation('sidebar');
   // const { t, i18n } = useTranslation('sidebar');
-
+  
   const [isRTL, setRTL] = useState(lang === 'ar');
   useEffect(() => { setRTL(lang === 'ar') }, [lang])
-
+  
   const sections = [
     {
       type: 'link', key: 'dashboard', href: '/dashboard', icon: <MdDashboard />,
@@ -79,8 +77,10 @@ export default function Sidebar() {
       label: t(child.key)
     }))
   }))
-
-  if (!token) return null;
+  
+  console.log("token")
+  console.log(token)
+  if (!token) return <></>
 
   return (
     <>

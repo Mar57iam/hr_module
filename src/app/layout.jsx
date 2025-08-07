@@ -1,14 +1,15 @@
 "use client"
 import "./globals.css";
 import React, { useContext, useEffect, useState } from 'react';
-import TranslationProvider from "./_Components/TranslationProvider/TranslationProvider";
+import TranslationContext from "./_Components/TranslationProvider/TranslationContextProvider.jsx";
 import AuthContextProvider, { AuthContext } from "@/Context/AuthContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactQueryProvider from "./_Components/ReactQ/ReactQuery";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "./_Components/Sidebar/Sidebar";
-import ProtectRoute from "./_Components/ProutectedRoute/Protected";
+import FixRoute from "./_Components/ProutectedRoute/Protected";
 import Navbar from "./_Components/Navbar/Navbar";
+import { useTranslation } from "react-i18next";
 
 
 // const geistSans = Geist({
@@ -29,24 +30,30 @@ const metadata = {
 let query = new QueryClient()
 
 export default function RootLayout({ children }) {
+  const { lang } = useTranslation()
+  const [rtl, setRtl] = useState(lang)
+  useEffect(() => {
+    setRtl(lang === 'ar')
+  }, [lang])
 
   return (
-    <html lang="en">
+    <html dir={rtl ? "rtl" : "ltr"} lang="en">
       <body
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
         <AuthContextProvider>
-          <TranslationProvider>
+          <TranslationContext>
             {/* <Navbar/> */}
             <Sidebar />
             <ReactQueryProvider>
               <Toaster position="top-center" reverseOrder={false} />
-              <ProtectRoute>
+
+              <FixRoute>
                 {children}
-              </ProtectRoute>
+              </FixRoute>
+
             </ReactQueryProvider>
-          </TranslationProvider>
+          </TranslationContext>
         </AuthContextProvider>
 
       </body>
