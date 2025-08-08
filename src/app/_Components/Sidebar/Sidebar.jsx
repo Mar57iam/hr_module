@@ -38,7 +38,7 @@ export default function Sidebar() {
     {
       type: 'section', key: 'documents', icon: <MdFileUpload />, children: [
         { key: 'documents_list', href: '/allDocuments', icon: <MdList /> },
-        { key: 'add_document', href: '/documents/new', icon: <MdFileUpload /> }
+       
       ]
     },
     {
@@ -56,7 +56,7 @@ export default function Sidebar() {
     {
       type: 'section', key: 'attendance', icon: <MdAccessTime />, children: [
         { key: 'Clock', href: '/attendanceClock', icon: <MdAccessTime /> },
-        // { key: 'Manual Attendance', href: '/manualAttendance', icon: <MdPerson /> },
+        { key: 'Manual Attendance', href: '/manualAttendance', icon: <MdPerson /> },
         { key: 'reports', href: '/attendanceReports', icon: <MdBarChart /> },
       ]
     },
