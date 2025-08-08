@@ -37,14 +37,7 @@ export default function AllEmployees() {
     isError,
   } = useQuery({
     queryKey: ['employees', filters],
-    queryFn: () => getAllEm(filters)?.employees?.map((emp) => (
-      {
-        ...emp,
-        "name": emp.first_name + " " + emp.last_name,
-        "department": emp.department_id?.name || '—',
-        "position": emp.position_id?.title || '—',
-      }
-    )) || { "employees": [] },
+    queryFn: () => getAllEm(filters),
     keepPreviousData: true,
   });
 
@@ -70,6 +63,17 @@ export default function AllEmployees() {
     { label: 'Actions', key: 'actions' },
   ]), []);
 
+  const [employees, setEmployees] = useState([])
+  useEffect(() => {
+    setEmployees(data?.employees?.map((emp) => (
+      {
+        ...emp,
+        "name": emp.first_name + " " + emp.last_name,
+        "department": emp.department_id?.name || '—',
+        "position": emp.position_id?.title || '—',
+      }
+    )))
+  }, [data])
   if (isLoading) {
     return <Loader />
   }
@@ -93,7 +97,7 @@ export default function AllEmployees() {
         </h2>
       </div>
 
-      <EmployeeFilter onFilterChange={handleFilterChange} cols={columns} data={data?.employees} />
+      <EmployeeFilter onFilterChange={handleFilterChange} cols={columns} data={employees} />
 
       <div className="w-full overflow-x-auto rounded-lg shadow-sm bg-white">
         <table className="w-full min-w-[800px] divide-y divide-gray-200">
@@ -111,26 +115,14 @@ export default function AllEmployees() {
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {data?.employees?.map((emp) => (
+            {employees?.map((emp) => (
               <tr key={emp.id}>
-                {Object.keys(columns).map((key, i) => (
-                  <td key={i} className="px-6 py-4 whitespace-nowrap">
-                    {emp[key] ?? ""}
+                {columns.filter(col => col.key !== "actions").map((col) => (
+                  <td key={col?.["key"]} className="px-6 py-4 whitespace-nowrap">
+                    {emp[col?.["key"]] ?? ""}
                   </td>
                 ))}
-                {/* <td className="px-6 py-4 whitespace-nowrap">{emp.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.department}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.position}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{emp.status}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{emp.hire_date}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{emp.phone_number}</td> */}
+
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => router.push(`/employees/${emp.id}`)}

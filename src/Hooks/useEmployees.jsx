@@ -20,7 +20,7 @@ export default function useEmployees() {
     });
 
     if (!res.ok) throw new Error('Failed to fetch employees');
-    return res.json();
+    return await res.json();
   };
 
   const getEmployeeProfile = async (id) => {
