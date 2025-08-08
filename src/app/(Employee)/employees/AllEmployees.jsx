@@ -37,9 +37,17 @@ export default function AllEmployees() {
     isError,
   } = useQuery({
     queryKey: ['employees', filters],
-    queryFn: () => getAllEm(filters),
+    queryFn: () => getAllEm(filters)?.employees?.map((emp) => (
+      {
+        ...emp,
+        "name": emp.first_name + " " + emp.last_name,
+        "department": emp.department_id?.name || '—',
+        "position": emp.position_id?.title || '—',
+      }
+    )) || { "employees": [] },
     keepPreviousData: true,
   });
+
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -52,12 +60,13 @@ export default function AllEmployees() {
 
   const columns = useMemo(() => ([
     { label: 'ID', key: 'id' },
+    { label: 'Employee Id', key: 'employee_id' },
     { label: 'Name', key: 'name' },
     { label: 'Department', key: 'department' },
     { label: 'Position', key: 'position' },
     { label: 'Status', key: 'status' },
-    { label: 'Hire Date', key: 'hireDate' },
-    { label: 'Phone', key: 'phone' },
+    { label: 'Hire Date', key: 'hire_date' },
+    { label: 'Phone', key: 'phone_number' },
     { label: 'Actions', key: 'actions' },
   ]), []);
 
@@ -84,7 +93,7 @@ export default function AllEmployees() {
         </h2>
       </div>
 
-      <EmployeeFilter onFilterChange={handleFilterChange} />
+      <EmployeeFilter onFilterChange={handleFilterChange} cols={columns} data={data?.employees} />
 
       <div className="w-full overflow-x-auto rounded-lg shadow-sm bg-white">
         <table className="w-full min-w-[800px] divide-y divide-gray-200">
@@ -95,7 +104,7 @@ export default function AllEmployees() {
                   key={col.key}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
                 >
-                  {col.label}
+                  {t(col.label)}
                 </th>
               ))}
             </tr>
@@ -104,23 +113,28 @@ export default function AllEmployees() {
           <tbody className="bg-white divide-y divide-gray-200">
             {data?.employees?.map((emp) => (
               <tr key={emp.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{emp.id}</td>
+                {Object.keys(columns).map((key, i) => (
+                  <td key={i} className="px-6 py-4 whitespace-nowrap">
+                    {emp[key] ?? ""}
+                  </td>
+                ))}
+                {/* <td className="px-6 py-4 whitespace-nowrap">{emp.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.first_name} {emp.last_name}
+                  {emp.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.department_id?.name || '—'}
+                  {emp.department}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {emp.position_id?.title || '—'}
+                  {emp.position}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{emp.status}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{emp.hire_date}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{emp.phone_number}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{emp.phone_number}</td> */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => router.push(`/employees/${emp.id}`)}
-                    className="text-sm font-medium text-blue-600 hover:underline"
+                    className="text-sm font-medium text-blue-600 hover:underline cursor-pointer"
                   >
                     View Profile
                   </button>

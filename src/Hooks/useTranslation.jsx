@@ -3,8 +3,6 @@
 import { TranslationContext } from '@/Context/TranslationContext.jsx';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const NAMESPACES = ['auth', 'employees', 'departments', 'sidebar'];
-
 export default function useTranslation(page = null) {
   const { lang, changeLang, t } = useContext(TranslationContext);
 
