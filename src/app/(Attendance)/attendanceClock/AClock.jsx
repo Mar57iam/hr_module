@@ -1,48 +1,124 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaClock, FaMapMarkerAlt, FaUndo } from 'react-icons/fa';
+import { AuthContext } from '@/Context/AuthContext';
 
 export default function AttendencePage() {
+  const [isClockedIn, setIsClockedIn] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    // استرجاع البيانات من localStorage عند تحميل الصفحة
+    const savedAddress = localStorage.getItem('address');
+    const savedClockStatus = localStorage.getItem('isClockedIn');
+    const savedLocation = localStorage.getItem('location');
+
+    if (savedAddress) setAddress(savedAddress);
+    if (savedClockStatus) setIsClockedIn(savedClockStatus === 'true');
+    if (savedLocation) setLocation(JSON.parse(savedLocation));
+  }, []);
+
+  const getAddressFromCoords = async (latitude, longitude) => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const data = await res.json();
+      return data.display_name || 'Address not found';
+    } catch (err) {
+      console.error('Error getting address:', err);
+      return 'Address not found';
+    }
+  };
+
+  const handleClock = () => {
+    if (!navigator.geolocation) {
+      setMessage('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        setLocation({ latitude, longitude });
+        localStorage.setItem('location', JSON.stringify({ latitude, longitude }));
+
+        const fetchedAddress = await getAddressFromCoords(latitude, longitude);
+        setAddress(fetchedAddress);
+        localStorage.setItem('address', fetchedAddress);
+
+        try {
+          const response = await fetch(
+            'https://site46339-a7pcm8.scloudsite101.com/api/attendance',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ latitude, longitude, address: fetchedAddress }),
+            }
+          );
+
+          const data = await response.json();
+          console.log(data);
+
+          setMessage(data.message || 'Attendance recorded successfully');
+
+          if (data.chock === 'Chock In') {
+            setIsClockedIn(true);
+            localStorage.setItem('isClockedIn', 'true');
+          } else if (data.chock === 'Chock Out') {
+            setIsClockedIn(false);
+            localStorage.setItem('isClockedIn', 'false');
+          }
+        } catch (error) {
+          setMessage('Error connecting to server');
+          console.error(error);
+        }
+
+        setLoading(false);
+      },
+      () => {
+        setMessage('Unable to retrieve your location');
+        setLoading(false);
+      }
+    );
+  };
+
   return (
     <div className="min-h-screen md:ml-[250px] bg-white py-10 px-6 md:px-20">
-      {/* Title */}
-      <h2 className="text-3xl font-bold  text-gray-900 mb-2">
-        Employee Time Clock
-      </h2>
-      <p className=" text-gray-500 mb-10">
-        Track your work hours and breaks
-      </p>
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Employee Time Clock</h2>
+      <p className="text-gray-500 mb-10">Track your work hours and breaks</p>
 
-      {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        {/* Status */}
         <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <p className="font-medium text-gray-800">Status</p>
             <FaClock className="text-gray-400" />
           </div>
           <span className="inline-block bg-gray-200 text-sm font-medium text-gray-700 px-3 py-1 rounded-lg w-max">
-            Clocked Out
+            {isClockedIn ? 'Clocked In' : 'Clocked Out'}
           </span>
         </div>
 
-        {/* Location */}
-        <div className="border  border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
+        <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <p className="font-medium text-gray-800">Location</p>
             <FaMapMarkerAlt className="text-gray-400" />
           </div>
-          <span className="inline-block bg-gray-200 text-sm font-medium text-gray-700 px-3 py-1 rounded-lg w-max">
-            Disabled
-          </span>
           <div className="text-sm text-gray-500">
-            Office Location (Mock)
-            <br />
-            <span className="text-gray-600 font-mono">40.7128, -74.0060</span>
+            {address ? <span className="text-gray-600">{address}</span> : 'No address data'}
           </div>
         </div>
 
-        {/* Today's Hours */}
         <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <p className="font-medium text-gray-800">Today's Hours</p>
@@ -52,63 +128,21 @@ export default function AttendencePage() {
         </div>
       </div>
 
-      {/* Time Clock Buttons */}
       <div className="border border-gray-100 rounded-xl p-8 shadow-sm max-w-3xl mx-auto">
         <h3 className="text-lg font-medium text-gray-800 mb-4">Time Clock</h3>
         <div className="flex gap-4 justify-center">
-          <button className="flex items-center  gap-2 bg-black text-white px-5 py-2 rounded-lg font-semibold">
+          <button
+            onClick={handleClock}
+            disabled={loading}
+            className="flex items-center gap-2 bg-black text-white px-5 py-2 rounded-lg font-semibold"
+          >
             <FaClock />
-            Clock In
+            {loading ? 'Processing...' : isClockedIn ? 'Clock Out' : 'Clock In'}
           </button>
-         
         </div>
+        {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
       </div>
-
-
-      <div className=' mt-9 p-8 shadow-sm mx-auto rounded-lg'>
-    
-  <h3 className="text-xl font-semibold mb-6 text-gray-800">Attendance Records</h3>
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-100 text-sm text-left">
-      <thead className="bg-gray-100 text-gray-700 font-semibold">
-        <tr>
-          <th className="px-4 py-3">Date</th>
-          <th className="px-4 py-3">Clock In</th>
-          <th className="px-4 py-3">Clock Out</th>
-          <th className="px-4 py-3">Duration</th>
-          <th className="px-4 py-3">Overtime</th>
-          <th className="px-4 py-3">Late</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-100">
-        {/* Example Row */}
-        <tr>
-          <td className="px-4 py-3">2025-07-26</td>
-          <td className="px-4 py-3">09:05 AM</td>
-          <td className="px-4 py-3">06:15 PM</td>
-          <td className="px-4 py-3">9h 10m</td>
-          <td className="px-4 py-3 text-green-600">+1h 10m</td>
-          <td className="px-4 py-3 text-red-600">+5m</td>
-        </tr>
-
-        {/* Row 2 */}
-        <tr>
-          <td className="px-4 py-3">2025-07-25</td>
-          <td className="px-4 py-3">08:55 AM</td>
-          <td className="px-4 py-3">05:00 PM</td>
-          <td className="px-4 py-3">8h 5m</td>
-          <td className="px-4 py-3 text-gray-500">—</td>
-          <td className="px-4 py-3 text-green-600">On Time</td>
-        </tr>
-
-        {/* Add more rows dynamically later */}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-      
-
     </div>
   );
 }
+

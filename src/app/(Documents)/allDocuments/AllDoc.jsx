@@ -116,7 +116,7 @@ export default function AllDocumentsTable() {
         ? `${employee.first_name} ${employee.last_name}`
         : 'N/A';
       const department = employee?.department_id?.name || 'N/A';
-      const fileUrl = `http://site46339-a7pcm8.scloudsite101.com/storage/${doc.document}`;
+      const fileUrl = `https://site46339-a7pcm8.scloudsite101.com/${doc.document}`;
 
       return (
         <tr key={doc.id} className="hover:bg-gray-50 transition">

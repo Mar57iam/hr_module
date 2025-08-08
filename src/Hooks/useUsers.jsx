@@ -8,7 +8,7 @@ export default function useUsers() {
   const { token } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  // Get all users
+
   const { data: users, isLoading, isError } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
@@ -24,7 +24,7 @@ export default function useUsers() {
     },
   });
 
-  // Add user
+  
   const addUser = useMutation({
     mutationFn: async (newUser) => {
       const res = await fetch('https://site46339-a7pcm8.scloudsite101.com/api/v1/users', {
@@ -48,7 +48,7 @@ export default function useUsers() {
     },
   });
 
-  // Update user
+
   const updateUser = useMutation({
     mutationFn: async ({ id, data }) => {
       const res = await fetch(`https://site46339-a7pcm8.scloudsite101.com/api/v1/users/${id}`, {
@@ -72,7 +72,7 @@ export default function useUsers() {
     },
   });
 
-  // ✅ Delete user
+  
   const deleteUser = useMutation({
     mutationFn: async (id) => {
       const res = await fetch(`https://site46339-a7pcm8.scloudsite101.com/api/v1/users/${id}`, {

@@ -1,37 +1,24 @@
-
-
-
 import { useContext } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '@/Context/AuthContext';
 
 export default function useAttendance() {
-  const queryClient = useQueryClient();
   const { token } = useContext(AuthContext);
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`https://site46339-a7pcm8.scloudsite101.com/api/attendance`, {
-        method: 'POST',
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['attendanceReports'],
+    queryFn: async () => {
+      const res = await fetch('https://site46339-a7pcm8.scloudsite101.com/api/v1/show-attendance', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-  
-      if (!res.ok) {
-        throw ('Failed to clock in');
-      }
-  
-      return res.json();
+
+      const finalReports = await res.json();
+      return finalReports;
     },
-    onSuccess: () => {
-      toast.success('Clock in successful!');
-      queryClient.invalidateQueries(['attendance']);
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    }
+    // enabled: !!token,
   });
-  
-  return mutation;
+
+  return { data, isLoading, isError };
 }
