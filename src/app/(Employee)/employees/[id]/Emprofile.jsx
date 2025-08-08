@@ -9,6 +9,7 @@ import { FiUser, FiTrash2, FiEdit2, FiSave, FiX } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { AuthContext } from '@/Context/AuthContext';
 import ConfirmModal from '../../Confirm';
+import Loader from '@/app/_Components/Loader/loader';
 // import ConfirmModal from '@/components/ConfirmModal';
 
 function InputField({ label, name, register, type = 'text', readOnly = true }) {
@@ -103,7 +104,7 @@ export default function EmProfile() {
     });
   };
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>;
+  if (isLoading) return <Loader/>;
   if (isError) return <div className="text-center py-10 text-red-500">Error loading data.</div>;
 
   return (

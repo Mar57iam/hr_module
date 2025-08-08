@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthContext } from '@/Context/AuthContext';
 import { CgSpinner } from "react-icons/cg";
 import useTranslation from '@/Hooks/useTranslation';
+import Loader, { Spinner } from '@/app/_Components/Loader/loader';
 
 export default function LoginForm() {
   const { loginUserFunc } = useContext(AuthContext);
@@ -31,7 +32,7 @@ export default function LoginForm() {
 
   // const { t, i18n } = useTranslation('auth');
   const { lang, setLang, t } = useTranslation("auth")
-  const [ isRTL, setRTL ] = useState(false);
+  const [isRTL, setRTL] = useState(false);
 
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function LoginForm() {
 
   return <>
     {
-      isLoading ? <></> :
+      isLoading ? <Loader /> :
         <>
           <div className="flex justify-center items-center h-screen bg-gray-50  bg-cover bg-center bg-no-repeat dark:bg-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="w-full h-[600px] max-w-lg p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
@@ -106,7 +107,7 @@ export default function LoginForm() {
                   className="w-full cursor-pointer mb-3 mt-5 text-white flex items-center justify-center gap-2 bg-[#B79031] hover:bg-white hover:text-black hover:border border-gray-600 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-600 dark:hover:text-white dark:hover:bg-gray-900 group disabled:opacity-50"
                 >
                   {isLoading ? (
-                    <CgSpinner className="animate-spin w-5 h-5" />
+                    <Spinner />
                   ) :
                     t('signin_btn')
                   }

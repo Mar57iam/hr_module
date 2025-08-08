@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance from '@/lib/axiosInstance';
-import Cookies from 'js-cookie';
+import { CustomStorage } from '@/utils/customStorage';
 
 export const AuthContext = createContext();
 
@@ -17,7 +17,7 @@ export default function AuthContextProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const savedToken = Cookies.get('token');
+    const savedToken = CustomStorage.get('token');
     if (savedToken) {
       setToken(savedToken);
       setTempToken(savedToken);
@@ -46,15 +46,15 @@ export default function AuthContextProvider({ children }) {
 
       if (data.message === 'MFA required') {
         setTempToken(data.temp_token);
-        Cookies.set('token', data.temp_token);
+        CustomStorage.set('token', data.temp_token);
         setMfaRequired(true);
         router.push('/enableMfa');
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(data.user))
+      CustomStorage.set("user", JSON.stringify(data.user))
       if (data.access_token) {
-        Cookies.set('token', data.access_token, {
+        CustomStorage.set('token', data.access_token, {
           expires: 1,
           secure: true,
           sameSite: 'Strict',
@@ -71,7 +71,7 @@ export default function AuthContextProvider({ children }) {
 
   async function enableMfaFunc() {
     try {
-      const authHeader = tempToken || Cookies.get('token');
+      const authHeader = tempToken || CustomStorage.get('token');
 
       await axiosInstance.post(
         '/2fa/enable', {},
@@ -98,7 +98,7 @@ export default function AuthContextProvider({ children }) {
 
   async function verifyMfaFunc(code) {
     try {
-      const authHeader = tempToken || Cookies.get('token');
+      const authHeader = tempToken || CustomStorage.get('token');
 
       // console.log(' MFA Code Sent:', code);
       // console.log(' Auth Header:', authHeader);
@@ -114,13 +114,13 @@ export default function AuthContextProvider({ children }) {
       );
 
 
-      Cookies.set('token', data.access_token, {
+      CustomStorage.set('token', data.access_token, {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
       });
 
-      localStorage.setItem("user", JSON.stringify(data.user))
+      CustomStorage.setObj("user", data.user)
       setRole(data.role)
       setToken(data.access_token);
       await getMeFunc();
@@ -135,7 +135,7 @@ export default function AuthContextProvider({ children }) {
 
 
   async function logoutUserFunc() {
-    const authHeader = Cookies.get('token');
+    const authHeader = CustomStorage.get('token');
 
     try {
       axiosInstance.delete('/2fa/disable', {
@@ -147,8 +147,8 @@ export default function AuthContextProvider({ children }) {
       // console.error(' Logout Error:', err.response?.data || err.message);
     }
 
-    localStorage.setItem("user", undefined)
-    Cookies.remove('token');
+    CustomStorage.remove("user")
+    CustomStorage.remove("token")
     setToken(null);
     setTempToken(null);
     router.push('/');
@@ -157,7 +157,7 @@ export default function AuthContextProvider({ children }) {
 
   async function getMeFunc() {
     try {
-      const data = JSON.parse(localStorage.getItem("user"))
+      const data = CustomStorage.getObj("user")
       setRole(data?.role);
       return data;
 
@@ -174,7 +174,11 @@ export default function AuthContextProvider({ children }) {
   async function refreshTokenFunc() {
     try {
       const { data } = await axiosInstance.post('/auth/refresh');
-      Cookies.set('token', data.access_token, { expires: 1 });
+      CustomStorage.set('token', data.access_token, {
+        expires: 1,
+        secure: true,
+        sameSite: 'Strict',
+      });
       setToken(data.access_token);
 
       return data.access_token;

@@ -4,6 +4,8 @@ import useDocuments from '@/Hooks/useDocuments';
 import React, { useState } from 'react';
 import { FiMoreVertical, FiPlus } from 'react-icons/fi';
 import AddDocumentModal from '../DocModal';
+import Loader from '@/app/_Components/Loader/loader';
+
 import ConfirmModal from '@/app/(Employee)/Confirm';
 import SearchInput from '@/app/(Departments)/departments/SearchInput';
 

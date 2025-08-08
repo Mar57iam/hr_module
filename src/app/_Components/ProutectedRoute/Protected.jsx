@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import { AuthContext } from '@/Context/AuthContext'
 import useTranslation from '@/Hooks/useTranslation';
 import { usePathname, useRouter } from 'next/navigation'
@@ -44,13 +45,8 @@ export default function FixRoute({ children }) {
     fetchUser();
   }, [token]);
 
-
-  const { lang } = useTranslation()
-
   return <>
-    <div className={`${lang === 'ar' ? `me` : `ms`}-[280px]`}>
-      {children}
-    </div>
+    {children}
   </>
 
 }

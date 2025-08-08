@@ -1,9 +1,7 @@
 'use client';
 
-import { TranslationContext } from '@/app/_Components/TranslationProvider/TranslationContextProvider.jsx';
+import { TranslationContext } from '@/Context/TranslationContext.jsx';
 import { createContext, useContext, useEffect, useState } from 'react';
-
-const NAMESPACES = ['auth', 'employees', 'departments', 'sidebar'];
 
 export default function useTranslation(page = null) {
   const { lang, changeLang, t } = useContext(TranslationContext);
@@ -25,7 +23,7 @@ export default function useTranslation(page = null) {
 
 // export default function useTranslation(page = null) {
 //     const [lang, setLang] = useState('en');
-//     // const [langDict, setLangDict] = useState(JSON.parse(localStorage.getItem("langDict")));
+//     // const [langDict, setLangDict] = useState(JSON.parse(CustomStorage.get("langDict")));
 //     const [langDict, setLangDict] = useState({});
 
 //     // Check if data for this lang+page is already loaded
@@ -51,7 +49,7 @@ export default function useTranslation(page = null) {
 //                             }
 //                         }));
 //                         setLang(newLang);
-//                         localStorage.setItem("lang", newLang);
+//                         CustomStorage.set("lang", newLang);
 //                     }
 //                 );
 //         } catch (err) {
@@ -61,7 +59,7 @@ export default function useTranslation(page = null) {
 //     async function changeLang(newLang) {
 //         if (isCachedData(newLang, page)) {
 //             setLang(newLang);
-//             localStorage.setItem("lang", newLang);
+//             CustomStorage.set("lang", newLang);
 //         } else {
 //             if (page) {
 //                 // Load single namespace
@@ -74,7 +72,7 @@ export default function useTranslation(page = null) {
 //     }
 
 //     useEffect(() => {
-//         const storedLang = localStorage.getItem("lang") || "en";
+//         const storedLang = CustomStorage.get("lang", "en");
 //         changeLang(storedLang);
 //     }, [page, lang]); // runs when `page` changes
 
