@@ -14,7 +14,7 @@ export default function EmployeeFilter({ onFilterChange, data, cols }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const newFilters = { ...filters, [name]: value };
+    const newFilters = { ...filters, [name]: value.toLowerCase() };
     setFilters(newFilters);
     onFilterChange(newFilters);
   };

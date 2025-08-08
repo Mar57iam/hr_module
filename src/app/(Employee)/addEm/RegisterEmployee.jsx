@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 
 import useEmployees from '@/Hooks/useEmployees';
+import useTranslation from '@/Hooks/useTranslation';
 
 const employeeSchema = z.object({
   first_name: z.string().min(3, 'validation.first_name_min'),
@@ -74,8 +74,8 @@ function FormField({ name, type, register, errors, apiErrors, t, options }) {
 }
 
 export default function RegisterEmployee() {
-  // const { t, i18n } = useTranslation('employees');
-  const isRTL = i18n.language === 'ar';
+  const { t, lang, setLang } = useTranslation('employees');
+  const isRTL = lang === 'ar';
 
   const { addMutation } = useEmployees();
   const [apiErrors, setApiErrors] = useState({});
@@ -119,38 +119,37 @@ export default function RegisterEmployee() {
   const directionClass = useMemo(() => (isRTL ? 'rtl md:mr-[280px]' : 'ltr md:ml-[280px]'), [isRTL]);
 
   return (
-      <section dir={isRTL ? 'rtl' : 'ltr'} className={`min-h-screen flex flex-col px-4 pt-10 ${directionClass}`}>
-        <div className={`${isRTL ? 'md:mr-48' : 'md:ml-48'} md:mb-12`}>
-          <h2 className="text-3xl font-bold text-gray-700">{t('register_employee')}</h2>
+    <section dir={isRTL ? 'rtl' : 'ltr'} className={`min-h-screen flex flex-col px-4 pt-10 ${directionClass}`}>
+      <div className={`${isRTL ? 'md:mr-48' : 'md:ml-48'} md:mb-12`}>
+        <h2 className="text-3xl font-bold text-gray-700">{t('register_employee')}</h2>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col rounded-xl bg-white shadow-md w-full max-w-5xl mx-auto p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          {fields.map(field => (
+            <FormField
+              key={field.name}
+              {...field}
+              register={register}
+              errors={errors}
+              apiErrors={apiErrors}
+              t={t}
+            />
+          ))}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col rounded-xl bg-white shadow-md w-full max-w-5xl mx-auto p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-            {fields.map(field => (
-              <FormField
-                key={field.name}
-                {...field}
-                register={register}
-                errors={errors}
-                apiErrors={apiErrors}
-                t={t}
-              />
-            ))}
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-[50%] mx-auto mb-3 mt-5 flex justify-center items-center gap-2 font-medium rounded-lg text-sm px-5 py-2.5 transition-all ${
-              loading
-                ? 'opacity-50 cursor-not-allowed bg-[#B79031]'
-                : 'text-white bg-[#B79031] hover:bg-white hover:text-black border border-transparent hover:border-gray-600'
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-[50%] mx-auto mb-3 mt-5 flex justify-center items-center gap-2 font-medium rounded-lg text-sm px-5 py-2.5 transition-all ${loading
+            ? 'opacity-50 cursor-not-allowed bg-[#B79031]'
+            : 'text-white bg-[#B79031] hover:bg-white hover:text-black border border-transparent hover:border-gray-600'
             }`}
-          >
-            {loading ? t('loading') : t('add_employee')}
-          </button>
-        </form>
-      </section>
+        >
+          {loading ? t('loading') : t('add_employee')}
+        </button>
+      </form>
+    </section>
   );
 }
 
