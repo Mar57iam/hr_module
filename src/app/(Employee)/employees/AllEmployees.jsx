@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import ConfirmModal from '../Confirm';
 import EmEdModal from './EmEdModal';
 import useTranslation from '@/Hooks/useTranslation';
+import Loader from '@/app/_Components/Loader/loader';
 
 export default function AllEmployees() {
   const [filters, setFilters] = useState({
@@ -61,11 +62,7 @@ export default function AllEmployees() {
   ]), []);
 
   if (isLoading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <span className="loader" />
-      </div>
-    );
+    return <Loader />
   }
 
   if (isError) {
@@ -79,11 +76,10 @@ export default function AllEmployees() {
   return <>
     <section
       dir={isRTL ? 'rtl' : 'ltr'}
-      className={`mt-4 ml-0 mx-auto px-4 ${isRTL ? 'md:mr-[300px]' : 'md:ml-[300px]'
-        }`}
+      className={`mt-4 ml-0 mx-auto px-4 ${isRTL ? 'md:mr-[300px]' : 'md:ml-[300px]'}`}
     >
       <div className={`${isRTL ? 'md:mr-3' : 'md:ml-3'} md:mt-3 mb-3`}>
-        <h2 className=" mm text-2xl mt-14 md:mt-10 font-bold text-gray-700">
+        <h2 className="mm text-2xl mt-14 md:mt-10 font-bold text-gray-700">
           {t('employee_directory')}
         </h2>
       </div>

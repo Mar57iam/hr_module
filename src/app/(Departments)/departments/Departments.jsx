@@ -15,6 +15,7 @@ import { useDepartments } from '@/Hooks/useDepartments';
 import toast from 'react-hot-toast';
 import ConfirmModal from '@/app/(Employee)/Confirm';
 import { useRouter } from 'next/navigation';
+import Loader from '@/app/_Components/Loader/loader';
 
 export default function DepartmentsPage() {
   const router = useRouter();
@@ -83,9 +84,7 @@ export default function DepartmentsPage() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <span className="loader" />
-      </div>
+      <Loader/>
     );
   }
 

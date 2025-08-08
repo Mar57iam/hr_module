@@ -1,7 +1,7 @@
 "use client"
 import "./globals.css";
 import React, { useContext, useEffect, useState } from 'react';
-import TranslationContext from "./_Components/TranslationProvider/TranslationContextProvider.jsx";
+import TranslationContext from "../Context/TranslationContext.jsx";
 import AuthContextProvider, { AuthContext } from "@/Context/AuthContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactQueryProvider from "./_Components/ReactQ/ReactQuery";

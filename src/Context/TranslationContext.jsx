@@ -1,19 +1,20 @@
 'use client';
 
+import { CustomStorage } from '@/utils/customStorage';
 import { createContext, useEffect, useState } from 'react';
 
 export const TranslationContext = createContext();
 const NAMESPACES = ['auth', 'employees', 'departments', 'sidebar'];
 
 export default function TranslationContextProvider({ children }) {
-  const [lang, setLang] = useState(localStorage.getItem("lang"));
+  const [lang, setLang] = useState(CustomStorage.get("lang", "en"));
   const [langDict, setLangDict] = useState({});
-  
+
   async function changeLang(newLang, page = null) {
     console.log(lang)
     console.log(newLang)
     setLang(newLang);
-    localStorage.setItem('lang', newLang);
+    CustomStorage.set('lang', newLang);
 
     if (page) {
       await loadLanguageFile(newLang, page);
@@ -46,13 +47,21 @@ export default function TranslationContextProvider({ children }) {
   }
 
   useEffect(() => {
-    const stored = localStorage.getItem("lang");
+    const stored = CustomStorage.get("lang", "en");
     if (stored) setLang(stored);
   }, []);
 
+
+  const [rtl, setRtl] = useState(lang == 'ar')
+  useEffect(() => {
+    setRtl(p => lang == 'ar')
+  }, [lang])
+
   return (
     <TranslationContext.Provider value={{ lang, changeLang, t }}>
-      {children}
+      {/* <div className={`${rtl ? 'md:mr-[300px]' : 'md:ml-[300px]'}`}> */}
+        {children}
+      {/* </div> */}
     </TranslationContext.Provider>
   );
 }

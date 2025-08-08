@@ -8,6 +8,7 @@ import { AuthContext } from '@/Context/AuthContext';
 
 import AdmainDashboard from './AdmainDashboard';
 import EmDashboard from './EmDashboard';
+import Loader from '@/app/_Components/Loader/loader';
 
 export default function Dashboard() {
   const { role } = useContext(AuthContext);
@@ -19,6 +20,6 @@ export default function Dashboard() {
     return <EmDashboard />;
   }
 
-  return <p>Loading...</p>;
+  return <Loader/>
 }
 

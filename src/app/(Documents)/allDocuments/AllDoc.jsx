@@ -3,12 +3,13 @@
 import useDocuments from '@/Hooks/useDocuments';
 import React, { useState } from 'react';
 import AddDocumentModal from '../DocModal';
+import Loader from '@/app/_Components/Loader/loader';
 
 
 export default function AllDocumentsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { documents, isLoading, isError, refetch } = useDocuments(); 
-  if (isLoading) return <p className='ml-[300px]'>Loading...</p>;
+  const { documents, isLoading, isError, refetch } = useDocuments();
+  if (isLoading) return <Loader/>
   if (isError) return <p className='ml-[300px] text-red-500'>Something went wrong!</p>;
 
   return (
