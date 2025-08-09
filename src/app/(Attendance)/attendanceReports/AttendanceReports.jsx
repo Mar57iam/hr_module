@@ -4,31 +4,32 @@ import { useState } from "react";
 import useAttendance from "@/Hooks/useAttendance";
 
 export default function AttendanceReports() {
-  const { data, isLoading, isError } = useAttendance();
+  const { attendanceReports } = useAttendance();
+  const { data, isLoading, isError } = attendanceReports;
+  
 
-  // حالة الفلاتر
+  
   const [filterFrom, setFilterFrom] = useState('');
   const [filterTo, setFilterTo] = useState('');
   const [filterEmployee, setFilterEmployee] = useState('All Employees');
   const [filteredData, setFilteredData] = useState(null);
 
-  // قائمة الموظفين المتاحة بناءً على البيانات
+  
   const employeesList = data?.attendances
     ? Array.from(new Set(data.attendances.map(item => item.employee_name)))
     : [];
 
-  // وظيفة تصفية البيانات عند الضغط على زر البحث
-  const handleSearch = () => {
+   const handleSearch = () => {
     if (!data?.attendances) return;
 
     let filtered = data.attendances;
 
-    // فلترة حسب اسم الموظف إذا مختلف عن 'All Employees'
+
     if (filterEmployee !== 'All Employees') {
       filtered = filtered.filter(item => item.employee_name === filterEmployee);
     }
 
-    // فلترة حسب التواريخ
+   
     if (filterFrom) {
       filtered = filtered.filter(item => new Date(item.date) >= new Date(filterFrom));
     }
@@ -42,7 +43,6 @@ export default function AttendanceReports() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading attendance reports.</p>;
 
-  // البيانات اللي هنعرضها: بيانات مفلترة لو موجودة أو البيانات الأصلية
   const displayData = filteredData ?? data.attendances;
 
   return (

@@ -9,18 +9,46 @@ export default function AttendencePage() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [attendanceData, setAttendanceData] = useState(null);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    // استرجاع البيانات من localStorage عند تحميل الصفحة
     const savedAddress = localStorage.getItem('address');
     const savedClockStatus = localStorage.getItem('isClockedIn');
     const savedLocation = localStorage.getItem('location');
+    const savedAttendance = localStorage.getItem('attendanceData');
 
     if (savedAddress) setAddress(savedAddress);
     if (savedClockStatus) setIsClockedIn(savedClockStatus === 'true');
     if (savedLocation) setLocation(JSON.parse(savedLocation));
+    if (savedAttendance) setAttendanceData(JSON.parse(savedAttendance));
+
+    fetchAttendanceFromAPI();
   }, []);
+
+ 
+  const fetchAttendanceFromAPI = async () => {
+    try {
+      const res = await fetch(
+        'https://site46339-a7pcm8.scloudsite101.com/api/attendance/today',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.attendanceCheck) {
+        setAttendanceData(data.attendanceCheck);
+        localStorage.setItem('attendanceData', JSON.stringify(data.attendanceCheck));
+        setIsClockedIn(!!data.attendanceCheck.check_in && !data.attendanceCheck.check_out);
+      }
+    } catch (err) {
+      console.error('Error fetching attendance:', err);
+    }
+  };
 
   const getAddressFromCoords = async (latitude, longitude) => {
     try {
@@ -71,6 +99,8 @@ export default function AttendencePage() {
           console.log(data);
 
           setMessage(data.message || 'Attendance recorded successfully');
+          setAttendanceData(data.attendanceCheck || null);
+          localStorage.setItem('attendanceData', JSON.stringify(data.attendanceCheck || {}));
 
           if (data.chock === 'Chock In') {
             setIsClockedIn(true);
@@ -99,16 +129,18 @@ export default function AttendencePage() {
       <p className="text-gray-500 mb-10">Track your work hours and breaks</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        {/* Status */}
         <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <p className="font-medium text-gray-800">Status</p>
             <FaClock className="text-gray-400" />
           </div>
           <span className="inline-block bg-gray-200 text-sm font-medium text-gray-700 px-3 py-1 rounded-lg w-max">
-            {isClockedIn ? 'Clocked In' : 'Clocked Out'}
+            {attendanceData?.status || (isClockedIn ? 'Clocked In' : 'Clocked Out')}
           </span>
         </div>
 
+        {/* Location */}
         <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <p className="font-medium text-gray-800">Location</p>
@@ -119,12 +151,21 @@ export default function AttendencePage() {
           </div>
         </div>
 
+        {/* Times */}
         <div className="border border-gray-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <p className="font-medium text-gray-800">Today's Hours</p>
+            <p className="font-medium text-gray-800">Today</p>
             <FaUndo className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">0.0h</p>
+          <p className="text-sm text-gray-500">
+            <strong>Date:</strong> {attendanceData?.date || '—'}
+          </p>
+          <p className="text-sm text-gray-700">
+            <strong>Clock In:</strong> {attendanceData?.check_in || '—'}
+          </p>
+          <p className="text-sm text-gray-700">
+            <strong>Clock Out:</strong> {attendanceData?.check_out || '—'}
+          </p>
         </div>
       </div>
 
@@ -145,4 +186,5 @@ export default function AttendencePage() {
     </div>
   );
 }
+
 
