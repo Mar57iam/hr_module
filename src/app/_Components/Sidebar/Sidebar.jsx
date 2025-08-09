@@ -13,6 +13,7 @@ import {
 import { AuthContext } from '@/Context/AuthContext';
 import Tbutton from '../Tbutton/Tbutton';
 import useTranslation from '@/Hooks/useTranslation';
+import { CustomStorage } from '@/utils/customStorage';
 
 export default function Sidebar() {
   const { token, logoutUserFunc } = useContext(AuthContext);
@@ -78,9 +79,7 @@ export default function Sidebar() {
     }))
   }))
   
-  console.log("token")
-  console.log(token)
-  if (!token) return <></>
+  if (!CustomStorage.get("token")) return <></>
 
   return (
     <>

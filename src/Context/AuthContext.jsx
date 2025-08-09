@@ -43,7 +43,6 @@ export default function AuthContextProvider({ children }) {
     try {
       const { data } = await axiosInstance.post(`/auth/login`, values);
 
-
       if (data.message === 'MFA required') {
         setTempToken(data.temp_token);
         CustomStorage.set('token', data.temp_token);

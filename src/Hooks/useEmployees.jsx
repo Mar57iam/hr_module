@@ -31,7 +31,7 @@ export default function useEmployees() {
       },
     });
     if (!res.ok) throw new Error('Failed to fetch employee');
-    return res.json();
+    return await res.json();
   };
 
   const updateEmployee = async ({ id, updatedData }) => {

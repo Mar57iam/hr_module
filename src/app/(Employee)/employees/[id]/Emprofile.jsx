@@ -21,9 +21,8 @@ function InputField({ label, name, register, type = 'text', readOnly = true }) {
         {...register(name)}
         readOnly={readOnly}
         placeholder={label}
-        className={`w-full px-0 py-2 border-0 border-b bg-transparent text-gray-700 border-gray-200 outline-none ${
-          !readOnly ? 'focus:border-blue-500' : 'focus:outline-none'
-        }`}
+        className={`w-full px-0 py-2 border-0 border-b bg-transparent text-gray-700 border-gray-200 outline-none ${!readOnly ? 'focus:border-blue-500' : 'focus:outline-none'
+          }`}
       />
     </div>
   );
@@ -81,8 +80,9 @@ export default function EmProfile() {
       reset(data.employee);
     }
   }, [data, reset]);
-
+  
   const employee = data?.employee;
+  console.log(data)
 
   const onSubmit = async (formData) => {
     try {
@@ -104,7 +104,7 @@ export default function EmProfile() {
     });
   };
 
-  if (isLoading) return <Loader/>;
+  if (isLoading) return <Loader />;
   if (isError) return <div className="text-center py-10 text-red-500">Error loading data.</div>;
 
   return (
@@ -225,11 +225,11 @@ export default function EmProfile() {
 
       {/* Confirm Modal */}
       <ConfirmModal
-  show={showDeleteModal}
-  onConfirm={handleDelete}
-  onCancel={() => setShowDeleteModal(false)}
-  message="Are you sure you want to delete this employee?"
-/>
+        show={showDeleteModal}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        message="Are you sure you want to delete this employee?"
+      />
 
     </section>
   );
