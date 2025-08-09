@@ -1,0 +1,24 @@
+{
+    "all_documents": "All Documents",
+    "add_document": "Add Document",
+    "search_placeholder": "Search ......",
+    "table": {
+      "id": "ID",
+      "title": "Title",
+      "employee": "Employee",
+      "department": "Department",
+      "actions": "Actions"
+    },
+    "error": {
+      "general": "Something went wrong!",
+      "delete": "Error deleting document"
+    },
+    "actions": {
+      "view_pdf": "View PDF",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "no_data": "No data to show",
+    "confirm_delete_message": "Are you sure you want to delete this document?"
+  }
+  
